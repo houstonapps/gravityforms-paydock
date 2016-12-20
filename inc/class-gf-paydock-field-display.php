@@ -34,20 +34,27 @@ if ( class_exists( 'GFForms' ) ) {
 				foreach ( $this->fields as $field ) {
 
 					if ( $field->type == 'paydock_credit_card' ) {
-
+						$width= $height = '400';
 						if ( !empty( $field->config_token ) ) {
 							$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
+							$url_params = $this->get_url_params( $field );
 							$widget_url =  isset( $settings['paydock_api_mode'] ) && $settings['paydock_api_mode'] == 'Live' ? GF_PAYDOCK_WIDGET_API_LIVE_URL : GF_PAYDOCK_WIDGET_API_SANDBOX_URL;
 
-							$url = $widget_url."/remote-action?public_key=".$settings['paydock_public_key']."&configuration_token=".$field->config_token."&ref_id=".$ref_id;
+							$url = $widget_url."/remote-action?public_key=".$settings['paydock_public_key']."&ref_id=".$ref_id.'&'.$url_params;
 							//$url='https://widget-sandbox.paydock.com/remote-action?public_key=f6a10d6ade5dcd5d229b9160a202ad4b90a744d8&configuration_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdXJwb3NlIjoicGF5bWVudF9zb3VyY2UiLCJwcmVkZWZpbmVkX2ZpZWxkcyI6eyJ0eXBlIjoiY2FyZCIsImdhdGV3YXlfaWQiOiI1ODQyN2ViYzFkM2IxMmYxN2UxOGRiNGIifSwid2ViaG9va19kZXN0aW5hdGlvbiI6Imh0dHBzOi8vcmVxdWVzdGIuaW4vMTZleHhieDEiLCJzdWNjZXNzX3JlZGlyZWN0X3VybCI6IiIsImVycm9yX3JlZGlyZWN0X3VybCI6IiIsImRlZmluZWRfZm9ybV9maWVsZHMiOltdLCJsYWJlbCI6IiIsImlhdCI6MTQ4MTI2Mjg1MX0.2zskzKk89SoqnlNHi_FhqsYp1Wm6u45euXFeJWXkgOw&text_color=red';
+							if ( !empty( $field->paydock_cc_iframe_width ) ) {
+								$width = $field->paydock_cc_iframe_width;
+							}
+							if ( !empty( $field->paydock_cc_iframe_height ) ) {
+								$height = $field->paydock_cc_iframe_height;
+							}
 						}
 					}
 				}
 			}
 
 			return "<div class='ginput_container ginput_container_email'>
-                            <iframe src='".$url."' width='400' height='400' ></iframe>
+                            <iframe src='".$url."' width='".$width."' height='".$height."' ></iframe>
                             <input type='hidden' name='paydock_ref_id' id='paydock_ref_id' value='' >
                         </div>";
 
@@ -58,6 +65,50 @@ if ( class_exists( 'GFForms' ) ) {
 				'group' => 'paydock_fields_front',
 				'text'  => $this->get_form_editor_field_title()
 			);
+		}
+
+		public function get_url_params( $field ) {
+			$url = $card = '';
+			$url.='configuration_token='.$field->config_token.'&';
+
+			$params = array(
+				'paydock_cc_iframe_finish_text',
+				'paydock_cc_iframe_font_size',
+				'paydock_cc_iframe_fields_validation',
+				'paydock_cc_iframe_background_color',
+				'paydock_cc_iframe_text_color',
+				'paydock_cc_iframe_border_color',
+				'paydock_cc_iframe_button_color',
+				'paydock_cc_iframe_error_color',
+				'paydock_cc_iframe_success_color'
+			);
+			foreach ( $params as $param ) {
+				if ( !empty( $field->{$param} ) ) {
+					$param_name = str_replace( 'paydock_cc_iframe_', '', $param );
+					$url.=$param_name. '=' .urlencode( $field->{$param} ) . '&';
+				}
+			}
+
+			$card_types = array(
+				'paydock_supported_ctype_visa'=>'visa',
+				'paydock_supported_ctype_mastercard'=>'mastercard',
+				'paydock_supported_ctype_american_express'=>'amex',
+				'paydock_supported_ctype_diner_club_international'=>'diners',
+				'paydock_supported_ctype_japanese_credit_bureau'=>'japcb',
+				'paydock_supported_ctype_laser_deposits'=>'laser',
+				'paydock_supported_ctype_solo'=>'solo'
+			);
+			foreach ( $card_types as $key => $card_type ) {
+				if ( !empty( $field->{$key} ) ) {
+					$card.= urlencode( $card_type ). ',';
+				}
+			}
+
+			if ( !empty( $card ) ) {
+				$url.='supported_card_types='.$card;
+			}
+			return $url;
+
 		}
 
 	}

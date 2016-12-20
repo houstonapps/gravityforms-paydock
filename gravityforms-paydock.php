@@ -11,12 +11,12 @@ define( 'GF_PAYDOCK_DIR', WP_PLUGIN_DIR . '/' . basename( dirname( __FILE__ ) ) 
 define( 'GF_PAYDOCK_URL', plugins_url() . '/' . basename( dirname( __FILE__ ) ) );
 
 // == API URLS ==
-define( 'GF_PAYDOCK_API_SANDBOX_URL','https://api-sandbox.paydock.com/v1');
-define( 'GF_PAYDOCK_API_LIVE_URL','https://api.paydock.com/v1');
+define( 'GF_PAYDOCK_API_SANDBOX_URL', 'https://api-sandbox.paydock.com/v1' );
+define( 'GF_PAYDOCK_API_LIVE_URL', 'https://api.paydock.com/v1' );
 
 // == Widget API URLS ==
-define( 'GF_PAYDOCK_WIDGET_API_SANDBOX_URL','https://widget-sandbox.paydock.com');
-define( 'GF_PAYDOCK_WIDGET_API_LIVE_URL','https://widget.paydock.com');
+define( 'GF_PAYDOCK_WIDGET_API_SANDBOX_URL', 'https://widget-sandbox.paydock.com' );
+define( 'GF_PAYDOCK_WIDGET_API_LIVE_URL', 'https://widget.paydock.com' );
 
 define( 'GRAVITY_FORMS_PAYDOCK_VERSION', '1.0' );
 add_action( 'gform_loaded', array( 'GF_Paydock_AddOn_Bootstrap', 'load' ), 5 );
@@ -33,6 +33,8 @@ class GF_Paydock_AddOn_Bootstrap {
 		// == Admin ==
 		require_once GF_PAYDOCK_DIR.'/inc/admin/fields/class-gf-paydock-field-credit-card.php';
 		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-group.php';
+		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-settings.php';
+		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-tooltips.php';
 
 		// == Frontend ==
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
@@ -85,7 +87,7 @@ class Gravity_Paydock {
 	public function __construct() {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts' ) );
-
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 
 	}
 
@@ -93,10 +95,16 @@ class Gravity_Paydock {
 		wp_enqueue_script( 'paydock-frontend', self::$url.'/js/paydock-frontend.js', array( 'jquery' ), false, false );
 	}
 
+	public function add_admin_scripts() {
+		wp_enqueue_style( 'paydock-admin', self::$url.'/css/paydock-admin.css' );
+		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'paydock-admin', self::$url.'/js/paydock-admin.js', array( 'wp-color-picker' ), false, true );
+	}
+
 
 	public function make_request( $method = 'GET', $uri = '', $params = array()  ) {
 		$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
-		$api_url =  isset($settings['paydock_api_mode']) && $settings['paydock_api_mode'] == 'Live' ? GF_PAYDOCK_API_LIVE_URL : GF_PAYDOCK_API_SANDBOX_URL;
+		$api_url =  isset( $settings['paydock_api_mode'] ) && $settings['paydock_api_mode'] == 'Live' ? GF_PAYDOCK_API_LIVE_URL : GF_PAYDOCK_API_SANDBOX_URL;
 
 		// setup the request
 		$url     = $api_url . $uri;
@@ -152,10 +160,3 @@ function Gravity_Paydock() {
 	return Gravity_Paydock::instance();
 }
 Gravity_Paydock();
-
-
-
-
- function update_confirmation_url( $confirmation, $form, $entry ) {
-		var_dump($confirmation); die;
-	}

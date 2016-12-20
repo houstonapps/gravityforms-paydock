@@ -1,0 +1,168 @@
+<!doctype html>
+<!--[if IE 6 ]><html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+
+	<title>PayDock GF Addon</title>
+
+	<meta name="description" content="Integrate PayDock with GF.">
+	<meta name="author" content="Aman Saini">
+	<meta name="copyright" content="Aman Saini">
+
+
+	<link rel="stylesheet" href="css/documenter_style.css" media="all">
+
+	<script src="js/jquery.1.6.4.js"></script>
+
+	<script src="js/jquery.scrollTo-1.4.2-min.js"></script>
+	<script src="js/jquery.easing.js"></script>
+
+
+	<script>document.createElement('section');var duration=500,easing='swing';</script>
+	<script src="js/script.js"></script>
+
+	<style>
+		html{background-color:#FFFFFF;color:#383838;}
+		::-moz-selection{background:#444444;color:#DDDDDD;}
+		::selection{background:#444444;color:#DDDDDD;}
+
+		a{color:#1CA800;}
+		hr{border-top:1px solid #EBEBEB;border-bottom:1px solid #FFFFFF;}
+		#documenter_sidebar, #documenter_sidebar ol a{background-color:#DDDDDD;color:#222222;}
+		#documenter_sidebar ol a{-webkit-text-shadow:1px 1px 0px #EEEEEE;-moz-text-shadow:1px 1px 0px #EEEEEE;text-shadow:1px 1px 0px #EEEEEE;}
+		#documenter_sidebar ol{border-top:1px solid #AAAAAA;}
+		#documenter_sidebar ol a{border-top:1px solid #EEEEEE;border-bottom:1px solid #AAAAAA;color:#444444;}
+		#documenter_sidebar ol a:hover{background:#444444;color:#DDDDDD;border-top:1px solid #444444;}
+		#documenter_sidebar ol a.current{background:#444444;color:#DDDDDD;border-top:1px solid #444444;}
+		#documenter_copyright{display:block !important;visibility:visible !important;}
+	</style>
+
+</head>
+<body>
+	<div id="documenter_sidebar">
+		<a href="#documenter_cover" id="documenter_logo"></a>
+		<ol id="documenter_nav">
+			<li><a class="current" href="#documenter_cover">Start</a></li>
+
+			<li><a href="#step_1">STEP 1: Create Customer</a></li>
+			<li><a href="#step_2">STEP 2: Charge Customer</a></li>
+			<li><a href="#support">Support</a></li>
+
+
+		</ol>
+		<div id="documenter_copyright">Copyright <br>
+		made with the <a href="http://rxa.li/documenter">Documenter v1.5</a>
+		</div>
+	</div>
+	<div id="documenter_content">
+	<section id="documenter_cover"><h1>PayDock GF Addon </h1><hr><ul><li>Version: 1.0.0</li></ul><p>Adds PayDock iFrame integartion to Gravity forms.
+</p></section>
+
+
+<section id="step_1">
+<h3>How to Use</h3><hr class="notop">
+<h4>
+Integrating PayDock is a 2 step process.
+
+
+
+</h4>
+<ul>
+	<li><h5>Creating Customer Object</h5></li>
+	<li><h5>Processing Charge on created customer</h5></li>
+</ul>
+
+<h4>STEP 1: CREATING CUSTOMER OBJECT</h4>
+<h6>Install the plugin. Then go to <strong>Forms => Settings</strong>, add your API keys & save. </h6>
+<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/paydock-settings.png">
+	<br/>
+	<h6>Create a New Form <strong>New Form</strong>, add First Name (optional), Email, Phone(optional) fields to form. Then add Paydock credit card field. </h6>
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/credit-card-field.png">
+	<br/>
+
+	<h6>Go to your Paydock account & create a new iFrame token</h6>
+	<strong>WEBHOOK DESTINATION SHOULD BE THE SITE URL WHERE PLUGIN IS INSTALLED </strong>
+<br/>
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/generate-token.png">
+	<br/>
+
+
+	<h6>Paste & Save the token in Credit Crad Field </h6>
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/save-token.png">
+	<br/>
+
+	<h6>GO to <strong>Form Settings</strong> and edit the <strong>confirmation message.</strong> as shown below</h6>
+	<p>You have to create a Charge page fist from Pages => Add new </p>
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/confirmation-charge-customer.png">
+	<br/>
+
+	<h6>Now under <strong>Form Settings</strong> Click <strong>PayDock Create Customer.</strong> as shown below</h6>
+	<p>You have to create a Charge page fist from Pages => Add new </p>
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/add-new-feed.png">
+	<br/>
+
+	<h6>Map the fields you want to send to Paydock for  creating customer object</h6>
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/feed-seetings.png">
+	<br/>
+
+
+	<h6>LAST Step  <strong>Add the Form to a Page in your site</strong></h6>
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/create-customer-page.png">
+	<br/>
+<br/><br/><br/><br/><br/>
+	</section>
+<hr/><hr/>
+<section id="step_2">
+	<h4>
+STEP 2: Charging Customer
+
+
+
+</h4>
+		<h6>Create a New Form for charging Customer </h6>
+	<p>It should have total or product field to send amount to paydock</p>
+
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/charge-customer/charge-customer-form.png">
+	<br/>
+
+
+
+		<h6>Click on Form Settings => Paydock Charge=> Add New </h6>
+	<p>Select One time or Recurring Subscription</p>
+
+
+	<br/>
+	<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/charge-customer/charge-customer-feed.png">
+	<br/>
+
+		<h6>Add the form to the page. NOTE: This form should be on the page which you set as conformation page for Form 1 so that user redirects directly to this page after submitting Form 1(Create Customer Form) </h6>
+
+
+<h4>Checking the Payment Status</h4>
+<h6>If Payment succeds the you can check the form entry to check payment status. Click on Entries and check the recent one </h6>
+<img style="width:100%;max-width:1600px;height:auto;" src="assets/images/charge-customer/entry.png">
+
+</section>
+
+
+	</div>
+</body>
+</html>

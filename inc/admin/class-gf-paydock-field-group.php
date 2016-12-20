@@ -49,7 +49,7 @@ class GF_Paydock_Field_Group {
 		$paydock_display_field_properties = array( 'type' => 'paydock_field_display', 'fields'=>array() );
 
 		foreach ( $form['fields'] as $key => $field ) {
-			if ( $field instanceof GF_PayDock_Field_Credit_Card ) {
+			if ( $field instanceof GF_PayDock_Field_Credit_Card || $field instanceof GF_PayDock_Field_Paypal ) {
 				$paydock_display_field_properties['fields'][] =$field;
 				unset( $form['fields'][$key] );
 				$paydock_field_exists= true;

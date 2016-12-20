@@ -18,16 +18,6 @@ define( 'GF_PAYDOCK_API_LIVE_URL','https://api.paydock.com/v1');
 define( 'GF_PAYDOCK_WIDGET_API_SANDBOX_URL','https://widget-sandbox.paydock.com');
 define( 'GF_PAYDOCK_WIDGET_API_LIVE_URL','https://widget.paydock.com');
 
-// == Admin ==
-require_once GF_PAYDOCK_DIR.'/inc/admin/fields/class-gf-paydock-field-credit-card.php';
-require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-group.php';
-
-
-// == Frontend ==
-require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
-require_once GF_PAYDOCK_DIR.'/inc/webhook-listener.php';
-
-
 define( 'GRAVITY_FORMS_PAYDOCK_VERSION', '1.0' );
 add_action( 'gform_loaded', array( 'GF_Paydock_AddOn_Bootstrap', 'load' ), 5 );
 class GF_Paydock_AddOn_Bootstrap {
@@ -39,6 +29,15 @@ class GF_Paydock_AddOn_Bootstrap {
 		GFAddOn::register( 'GF_Paydock_Create_Customer_Feed' );
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-charge-customer-feed.php';
 		GFAddOn::register( 'GF_Paydock_Charge_Customer_Feed' );
+
+		// == Admin ==
+		require_once GF_PAYDOCK_DIR.'/inc/admin/fields/class-gf-paydock-field-credit-card.php';
+		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-group.php';
+
+		// == Frontend ==
+		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
+		require_once GF_PAYDOCK_DIR.'/inc/webhook-listener.php';
+
 	}
 }
 
@@ -49,14 +48,14 @@ class Gravity_Paydock {
 	 *
 	 *
 	 * @var WP_Paydock
-	 * @since 2.0
+	 * @since 1.0
 	 */
 	private static $instance;
 
 	/**
 	 * Plugin Directory
 	 *
-	 * @since 2.0
+	 * @since 1.0
 	 * @var string $dir
 	 */
 	public static $dir = '';
@@ -66,7 +65,7 @@ class Gravity_Paydock {
 	/**
 	 * Plugin URL
 	 *
-	 * @since 2.0
+	 * @since 1.0
 	 * @var string $url
 	 */
 	public static $url = '';

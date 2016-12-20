@@ -1,5 +1,4 @@
 <?php
-
 class GF_Paydock_Field_Group {
 
 	function __construct() {
@@ -15,7 +14,14 @@ class GF_Paydock_Field_Group {
 		global $__gf_tooltips;
 		$__gf_tooltips['form_paydock_fields']='<h6>' . __( 'PayDock Fields', 'gfpaydock' ) . '</h6>' . __( 'PayDock Fields allow you to add paydock payment fields to your form.', 'gfpaydock' );
 		$__gf_tooltips['form_paydock_credit_card_config_token']='<h6>' . __( 'PayDock Fields', 'gfpaydock' ) . '</h6>' . __( 'Paste in configuration token here.', 'gfpaydock' );
-		$group[]=array( 'name' => 'paydock_fields', 'label' => __( 'PayDock Fields', 'gfpaydock' ), 'fields'=>array( array( 'class' => 'button', 'data-type' => 'paydock_credit_card', 'value' => GFCommon::get_field_type_title( 'paydock_credit_card' ) ) ) );
+		$group[]=array(
+			'name' => 'paydock_fields',
+			'label' => __( 'PayDock Fields', 'gfpaydock' ),
+			'fields'=>array(
+				array( 'class' => 'button', 'data-type' => 'paydock_credit_card', 'value' => GFCommon::get_field_type_title( 'paydock_credit_card' ) ),
+				array( 'class' => 'button', 'data-type' => 'paydock_paypal', 'value' => GFCommon::get_field_type_title( 'paydock_paypal' ) )
+			)
+		);
 		return $group;
 
 	}

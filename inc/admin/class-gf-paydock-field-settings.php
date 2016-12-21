@@ -80,7 +80,7 @@ class GF_Paydock_Field_Settings {
 						<?php esc_html_e( 'Background Color', 'gfpaydock' ); ?>
 						<?php gform_tooltip( 'paydock_cc_iframe_background_color' ) ?>
 					</label>
-					<input type="text" class="paydock-color-field" id="paydock_cc_iframe_background_color" onblur="alert(this.value)" size="30" />
+					<input type="text" class="paydock-color-field" id="paydock_cc_iframe_background_color"  onblur="SetFieldProperty('paydock_cc_iframe_background_color', this.value);" size="30" />
 				</li>
 				<li class="paydock_cc_iframe_text_color field_setting">
 					<label for="paydock_cc_iframe_text_color" class="section_label">

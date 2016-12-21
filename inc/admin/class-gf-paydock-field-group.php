@@ -1,5 +1,4 @@
 <?php
-
 class GF_Paydock_Field_Group {
 
 	function __construct() {
@@ -9,7 +8,15 @@ class GF_Paydock_Field_Group {
 	}
 
 	public function add_paydock_group( $group ) {
-		$group[]=array( 'name' => 'paydock_fields', 'label' => __( 'PayDock Fields', 'gfpaydock' ), 'fields'=>array( array( 'class' => 'button', 'data-type' => 'paydock_credit_card', 'value' => GFCommon::get_field_type_title( 'paydock_credit_card' ) ) ) );
+
+		$group[]=array(
+			'name' => 'paydock_fields',
+			'label' => __( 'PayDock Fields', 'gfpaydock' ),
+			'fields'=>array(
+				array( 'class' => 'button', 'data-type' => 'paydock_credit_card', 'value' => GFCommon::get_field_type_title( 'paydock_credit_card' ) ),
+				array( 'class' => 'button', 'data-type' => 'paydock_paypal', 'value' => GFCommon::get_field_type_title( 'paydock_paypal' ) )
+			)
+		);
 		return $group;
 	}
 
@@ -22,7 +29,7 @@ class GF_Paydock_Field_Group {
 		$paydock_display_field_properties = array( 'type' => 'paydock_field_display', 'fields'=>array() );
 
 		foreach ( $form['fields'] as $key => $field ) {
-			if ( $field instanceof GF_PayDock_Field_Credit_Card ) {
+			if ( $field instanceof GF_PayDock_Field_Credit_Card || $field instanceof GF_PayDock_Field_Paypal ) {
 				$paydock_display_field_properties['fields'][] =$field;
 				unset( $form['fields'][$key] );
 				$paydock_field_exists= true;

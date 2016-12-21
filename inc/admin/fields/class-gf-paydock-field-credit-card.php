@@ -1,7 +1,6 @@
 <?php
 if ( class_exists( 'GFForms' ) ) {
 
-
 	class GF_PayDock_Field_Credit_Card extends GF_Field {
 
 		public $type = 'paydock_credit_card';
@@ -91,8 +90,6 @@ if ( class_exists( 'GFForms' ) ) {
 				'text'  => $this->get_form_editor_field_title()
 			);
 		}
-
-
 	}
 
 	GF_Fields::register( new GF_PayDock_Field_Credit_Card() );

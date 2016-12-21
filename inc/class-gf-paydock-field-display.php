@@ -31,11 +31,12 @@ if ( class_exists( 'GFForms' ) ) {
 				$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
 
 				foreach ( $this->fields as $field ) {
-					if ( $field->type == 'paydock_credit_card' ) {
 
-						$width= $height = '400';
+					if ( $field->type == 'paydock_credit_card' ) {
+						$width = $height = '400';
 						if ( !empty( $field->config_token ) ) {
 							$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
+							$ref_id = mt_rand( 1000, 1000000000 );
 							$url_params = $this->get_url_params( $field );
 							$widget_url =  isset( $settings['paydock_api_mode'] ) && $settings['paydock_api_mode'] == 'Live' ? GF_PAYDOCK_WIDGET_API_LIVE_URL : GF_PAYDOCK_WIDGET_API_SANDBOX_URL;
 

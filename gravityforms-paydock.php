@@ -32,12 +32,11 @@ class GF_Paydock_AddOn_Bootstrap {
 
 		// == Admin ==
 		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-group.php';
-
 		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-field-settings.php';
 		require_once GF_PAYDOCK_DIR.'/inc/admin/class-gf-paydock-tooltips.php';
+
 		require_once GF_PAYDOCK_DIR.'/inc/admin/fields/class-gf-paydock-field-credit-card.php';
 		require_once GF_PAYDOCK_DIR.'/inc/admin/fields/class-gf-paydock-field-paypal.php';
-
 
 		// == Frontend ==
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';

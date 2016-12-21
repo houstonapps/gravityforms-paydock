@@ -98,8 +98,14 @@ class Gravity_Paydock {
 	}
 
 	public function add_admin_scripts() {
+		/**
+		 * TODO : Make script to load only on required pages
+		 */
 		wp_enqueue_style( 'paydock-admin', self::$url.'/css/paydock-admin.css' );
 		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'gform_datepicker_init');
+
+
 		wp_enqueue_script( 'paydock-admin', self::$url.'/js/paydock-admin.js', array( 'wp-color-picker' ), false, true );
 	}
 

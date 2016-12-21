@@ -8,7 +8,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		protected $_path = 'gravityforms-paydock/inc/class-gf-paydock-charge-customer-feed.php';
 		protected $_full_path = __FILE__;
 		protected $_title = 'PayDock Charge Customer';
-		protected $_short_title = 'PayDock Charge';
+		protected $_short_title = 'PayDock Charge Customer';
 		protected $_supports_callbacks = true;
 		protected $_requires_credit_card = false;
 		protected $is_payment_gateway = false;
@@ -88,29 +88,29 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					'fields'      => array(
 						array(
 							'name'     => 'feedName',
-							'label'    => esc_html__( 'Name', 'gravityforms' ),
+							'label'    => esc_html__( 'Name', 'gfpaydock' ),
 							'type'     => 'text',
 							'class'    => 'medium',
 							'required' => true,
-							'tooltip'  => '<h6>' . esc_html__( 'Name', 'gravityforms' ) . '</h6>' . esc_html__( 'Enter a feed name to uniquely identify this setup.', 'gravityforms' )
+							'tooltip'  => '<h6>' . esc_html__( 'Name', 'gfpaydock' ) . '</h6>' . esc_html__( 'Enter a feed name to uniquely identify this setup.', 'gfpaydock' )
 						),
 						array(
 							'name'     => 'transactionType',
-							'label'    => esc_html__( 'Transaction Type', 'gravityforms' ),
+							'label'    => esc_html__( 'Transaction Type', 'gfpaydock' ),
 							'type'     => 'select',
 							'onchange' => "jQuery(this).parents('form').submit();",
 							'choices'  => array(
 								array(
-									'label' => esc_html__( 'Select a transaction type', 'gravityforms' ),
+									'label' => esc_html__( 'Select a transaction type', 'gfpaydock' ),
 									'value' => ''
 								),
 								array(
-									'label' => esc_html__( 'One time Charge', 'gravityforms' ),
+									'label' => esc_html__( 'One time Charge', 'gfpaydock' ),
 									'value' => 'product'
 								),
-								array( 'label' => esc_html__( 'Subscription', 'gravityforms' ), 'value' => 'subscription' ),
+								array( 'label' => esc_html__( 'Subscription', 'gfpaydock' ), 'value' => 'subscription' ),
 							),
-							'tooltip'  => '<h6>' . esc_html__( 'Transaction Type', 'gravityforms' ) . '</h6>' . esc_html__( 'Select a transaction type.', 'gravityforms' )
+							'tooltip'  => '<h6>' . esc_html__( 'Transaction Type', 'gfpaydock' ) . '</h6>' . esc_html__( 'Select a transaction type.', 'gfpaydock' )
 						),
 					)
 				),
@@ -123,42 +123,55 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					'fields'     => array(
 						array(
 							'name'     => 'recurringAmount',
-							'label'    => esc_html__( 'Recurring Amount', 'gravityforms' ),
+							'label'    => esc_html__( 'Recurring Amount', 'gfpaydock' ),
 							'type'     => 'select',
 							'choices'  => $this->recurring_amount_choices(),
 							'required' => true,
-							'tooltip'  => '<h6>' . esc_html__( 'Recurring Amount', 'gravityforms' ) . '</h6>' . esc_html__( "Select which field determines the recurring payment amount, or select 'Form Total' to use the total of all pricing fields as the recurring amount.", 'gravityforms' )
+							'tooltip'  => '<h6>' . esc_html__( 'Recurring Amount', 'gfpaydock' ) . '</h6>' . esc_html__( "Select which field determines the recurring payment amount, or select 'Form Total' to use the total of all pricing fields as the recurring amount.", 'gfpaydock' )
 						),
 						array(
 							'name'    => 'billingCycle',
-							'label'   => esc_html__( 'Billing Cycle', 'gravityforms' ),
+							'label'   => esc_html__( 'Billing Cycle', 'gfpaydock' ),
 							'type'    => 'billing_cycle',
-							'tooltip' => '<h6>' . esc_html__( 'Billing Cycle', 'gravityforms' ) . '</h6>' . esc_html__( 'Select your billing cycle.  This determines how often the recurring payment should occur.', 'gravityforms' )
+							'tooltip' => '<h6>' . esc_html__( 'Billing Cycle', 'gfpaydock' ) . '</h6>' . esc_html__( 'Select your billing cycle.  This determines how often the recurring payment should occur.', 'gfpaydock' )
 						),
-						// array(
-						//  'name'    => 'recurringTimes',
-						//  'label'   => esc_html__( 'Recurring Times', 'gravityforms' ),
-						//  'type'    => 'select',
-						//  'choices' => array(
-						//   array(
-						//    'label' => esc_html__( 'infinite', 'gravityforms' ),
-						//    'value' => '0'
-						//   )
-						//  ) + $this->get_numeric_choices( 1, 100 ),
-						//  'tooltip' => '<h6>' . esc_html__( 'Recurring Times', 'gravityforms' ) . '</h6>' . esc_html__( 'Select how many times the recurring payment should be made.  The default is to bill the customer until the subscription is canceled.', 'gravityforms' )
-						// ),
-						// array(
-						//  'name'  => 'setupFee',
-						//  'label' => esc_html__( 'Setup Fee', 'gravityforms' ),
-						//  'type'  => 'setup_fee',
-						// ),
-						// array(
-						//  'name'    => 'trial',
-						//  'label'   => esc_html__( 'Trial', 'gravityforms' ),
-						//  'type'    => 'trial',
-						//  'hidden'  => $this->get_setting( 'setupFee_enabled' ),
-						//  'tooltip' => '<h6>' . esc_html__( 'Trial Period', 'gravityforms' ) . '</h6>' . esc_html__( 'Enable a trial period.  The user\'s recurring payment will not begin until after this trial period.', 'gravityforms' )
-						// ),
+						array(
+							'name'     => 'end_amount_after',
+							'label'    => esc_html__( 'End Subscription After Amount ', 'gfpaydock' ),
+							'type'     => 'text',
+							'class'    => 'small',
+							'tooltip'  => '<h6>' . esc_html__( 'End Subscription After Amount ', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (equals or exceeds).', 'gfpaydock' )
+						),
+						array(
+							'name'     => 'end_amount_before',
+							'label'    => esc_html__( 'End Subscription Before Amount', 'gfpaydock' ),
+							'type'     => 'text',
+							'class'    => 'small',
+							'tooltip'  => '<h6>' . esc_html__( 'End Subscription Before Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (not to exceed).', 'gfpaydock' )
+						),
+						array(
+							'name'     => 'end_amount_total',
+							'label'    => esc_html__( 'End Subscription Total Amount', 'gfpaydock' ),
+							'type'     => 'text',
+							'class'    => 'small',
+							'tooltip'  => '<h6>' . esc_html__( 'End Subscription Total Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount to be payed with subscription (equals). NOTE: If last payment of subscription schedule will be less then $ 1.00, some of gateways could respond with error and subscription status will become <strong>failed</strong>.', 'gfpaydock' )
+						),
+						array(
+							'name'     => 'end_transactions',
+							'label'    => esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ),
+							'type'     => 'text',
+							'class'    => 'small',
+							'tooltip'  => '<h6>' . esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total count of all success transactions.', 'gfpaydock' )
+						),
+						array(
+							'name'     => 'end_date',
+							'label'    => esc_html__( 'Subscription End Date', 'gfpaydock' ),
+							'type'     => 'text',
+							'class'    => 'small datepicker ymd_dash',
+							'tooltip'  => '<h6>' . esc_html__( 'Subscription End Date', 'gfpaydock' ) . '</h6>' . esc_html__( 'Date when subscription will end automatically. Date Format <strong>(YYYY-MM-DD)</strong>.', 'gfpaydock' )
+						),
+
+
 					)
 				),
 				array(
@@ -170,17 +183,17 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					'fields'     => array(
 						array(
 							'name'          => 'paymentAmount',
-							'label'         => esc_html__( 'Payment Amount', 'gravityforms' ),
+							'label'         => esc_html__( 'Payment Amount', 'gfpaydock' ),
 							'type'          => 'select',
 							'choices'       => $this->product_amount_choices(),
 							'required'      => true,
 							'default_value' => 'form_total',
-							'tooltip'       => '<h6>' . esc_html__( 'Payment Amount', 'gravityforms' ) . '</h6>' . esc_html__( "Select which field determines the payment amount, or select 'Form Total' to use the total of all pricing fields as the payment amount.", 'gravityforms' )
+							'tooltip'       => '<h6>' . esc_html__( 'Payment Amount', 'gfpaydock' ) . '</h6>' . esc_html__( "Select which field determines the payment amount, or select 'Form Total' to use the total of all pricing fields as the payment amount.", 'gfpaydock' )
 						),
 					)
 				),
 				array(
-					'title'      => esc_html__( 'Other Settings', 'gravityforms' ),
+					'title'      => esc_html__( 'Other Settings', 'gfpaydock' ),
 					'dependency' => array(
 						'field'  => 'transactionType',
 						'values' => array( 'subscription', 'product', 'donation' )
@@ -194,18 +207,16 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 
 
 		public function other_settings_fields() {
-
-
-
 			$other_settings = array( array(
 					'name'    => 'conditionalLogic',
-					'label'   => esc_html__( 'Conditional Logic', 'gravityforms' ),
+					'label'   => esc_html__( 'Conditional Logic', 'gfpaydock' ),
 					'type'    => 'feed_condition',
-					'tooltip' => '<h6>' . esc_html__( 'Conditional Logic', 'gravityforms' ) . '</h6>' . esc_html__( 'When conditions are enabled, form submissions will only be sent to the payment gateway when the conditions are met. When disabled, all form submissions will be sent to the payment gateway.', 'gravityforms' )
+					'tooltip' => '<h6>' . esc_html__( 'Conditional Logic', 'gfpaydock' ) . '</h6>' . esc_html__( 'When conditions are enabled, form submissions will only be sent to the payment gateway when the conditions are met. When disabled, all form submissions will be sent to the payment gateway.', 'gfpaydock' )
 				) );
 
 			return $other_settings;
 		}
+
 		/* [
 	 *  'is_authorized' => true|false,
 	 *  'error_message' => 'Error message',
@@ -223,7 +234,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$data = array(
 					"amount"=>$submission_data['payment_amount'],
 					"currency"=>$entry['currency'],
-					"reference"=> $entry['id'],
+					//"reference"=> $entry['id'],
 					"description"=> "Charge using Form ".$form['id'],
 					"customer_id"=>base64_decode( $_POST['paydock_customer_id'] )
 				);
@@ -245,7 +256,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 						)
 					);
 				}else {
-					if( is_object($response->error)){
+					if ( is_object( $response->error ) ) {
 						$error = $response->error->message;
 					}
 					$result=  array(
@@ -262,20 +273,24 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		public function subscribe( $feed, $submission_data, $form, $entry ) {
 			$error ='';
 			if ( !empty( $_POST['paydock_customer_id'] ) ) {
-
-				$feed['meta']['billingCycle_length'];
-				$feed['meta']['billingCycle_unit'];
 				$data = array(
-					"amount"=>$submission_data['payment_amount'],
-					"currency"=>$entry['currency'],
-					"reference"=> $entry['id'],
-					"description"=> "Charge using Form ".$form['id'],
-					"customer_id"=>base64_decode( $_POST['paydock_customer_id'] ),
-					"schedule"=>array( "frequency"=>$feed['meta']['billingCycle_length'], "interval"=>$feed['meta']['billingCycle_unit'] )
+					'amount'=>$submission_data['payment_amount'],
+					'currency'=>$entry['currency'],
+					//'reference'=> $entry['id'],
+					'description'=> 'Charge using Form '.$form['id'],
+					'customer_id'=>base64_decode( $_POST['paydock_customer_id'] ),
+					'schedule'=>array(
+						'frequency'=>$feed['meta']['billingCycle_length'],
+						'interval'=>$feed['meta']['billingCycle_unit'],
+						'end_date'=>$feed['meta']['end_date'],
+						'end_amount_after'=>$feed['meta']['end_amount_after'],
+						'end_amount_before'=>$feed['meta']['end_amount_before'],
+						'end_amount_total'=>$feed['meta']['end_amount_total'],
+						'end_transactions'=>$feed['meta']['end_transactions'],
+					),
 				);
-				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
-				// echo '<pre>';
-				// print_r( $response ); die;
+
+				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
 
 				if ( empty( $response->error ) ) {
 					$transaction_id = $response->resource->data->transactions[0]->_id;
@@ -286,10 +301,18 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 						'amount' =>$response->resource->data->amount
 
 					);
-				}else {
-						if( is_object($response->error)){
+				} else {
+					if ( is_object( $response->error ) ) {
 						$error = $response->error->message;
+
+						if ( isset( $response->error->details ) ) {
+							$error .= ': '.$response->error->details[0];
+						}
 					}
+					/**
+					 * TODO : Show Error on Gravity Form Frontend
+					 *
+					 */
 					$result=  array(
 						'is_authorized' => false,
 						'error_message' => $error,
@@ -299,10 +322,5 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 			}
 			return $result;
 		}
-
-
-
-
-
 	}
 }

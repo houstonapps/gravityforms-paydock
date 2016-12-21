@@ -24,7 +24,6 @@ if ( class_exists( 'GFForms' ) ) {
 			$form_id  = ( $is_entry_detail || $is_form_editor ) && empty( $form_id ) ? rgget( 'id' ) : $form_id;
 			$class         = $this->size;
 
-
 			if ( ! empty( $this->fields ) && is_array( $this->fields ) ) {
 
 				$field_html = '';

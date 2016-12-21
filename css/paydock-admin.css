@@ -1,3 +1,6 @@
 .field_setting .iris-picker,.field_setting .iris-picker .iris-square-handle,.field_setting .wp-color-result{
 	box-sizing:content-box !important;
 }
+#gaddon-setting-row-transaction_end_value{
+	display: none;
+}

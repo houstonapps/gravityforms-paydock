@@ -135,41 +135,77 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 							'type'    => 'billing_cycle',
 							'tooltip' => '<h6>' . esc_html__( 'Billing Cycle', 'gfpaydock' ) . '</h6>' . esc_html__( 'Select your billing cycle.  This determines how often the recurring payment should occur.', 'gfpaydock' )
 						),
+
 						array(
-							'name'     => 'end_amount_after',
-							'label'    => esc_html__( 'End Subscription After Amount ', 'gfpaydock' ),
+							'name'     => 'transaction_end',
+							'label'    => esc_html__( 'End', 'gfpaydock' ),
+							'type'     => 'select',
+							'onchange' => "showEndTransactionValueField(this)",
+							'choices'  => array(
+								array(
+									'label' => esc_html__( 'Select when to end subscription', 'gfpaydock' ),
+									'value' => ''
+								),
+								array(
+									'label' => esc_html__( 'End Subscription After Amount', 'gfpaydock' ),
+									'value' => 'end_amount_after'
+								),
+								array(
+									'label' => esc_html__( 'End Subscription Before Amount', 'gfpaydock' ),
+									'value' => 'end_amount_before'
+								),
+								array(
+									'label' => esc_html__( 'End Subscription Total Amount', 'gfpaydock' ),
+									'value' => 'end_amount_total'
+								),
+
+								array(
+									'label' => esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ),
+									'value' => 'end_transactions'
+								),
+								array(
+									'label' => esc_html__( 'Subscription End Date', 'gfpaydock' ),
+									'value' => 'end_date'
+								),
+
+							),
+							'tooltip'  => '<h6>' . esc_html__( 'Transaction End', 'gfpaydock' ) . '</h6>' . esc_html__( 'Select when to end transaction.', 'gfpaydock' ).'<h5>' . esc_html__( 'End Subscription Before Amount', 'gfpaydock' ) . '</h5>'
+						),
+						array(
+							'name'     => 'transaction_end_value',
+							'label'    => esc_html__( '', 'gfpaydock' ),
 							'type'     => 'text',
 							'class'    => 'small',
-							'tooltip'  => '<h6>' . esc_html__( 'End Subscription After Amount ', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (equals or exceeds).', 'gfpaydock' )
 						),
-						array(
-							'name'     => 'end_amount_before',
-							'label'    => esc_html__( 'End Subscription Before Amount', 'gfpaydock' ),
-							'type'     => 'text',
-							'class'    => 'small',
-							'tooltip'  => '<h6>' . esc_html__( 'End Subscription Before Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (not to exceed).', 'gfpaydock' )
-						),
-						array(
-							'name'     => 'end_amount_total',
-							'label'    => esc_html__( 'End Subscription Total Amount', 'gfpaydock' ),
-							'type'     => 'text',
-							'class'    => 'small',
-							'tooltip'  => '<h6>' . esc_html__( 'End Subscription Total Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount to be payed with subscription (equals). NOTE: If last payment of subscription schedule will be less then $ 1.00, some of gateways could respond with error and subscription status will become <strong>failed</strong>.', 'gfpaydock' )
-						),
-						array(
-							'name'     => 'end_transactions',
-							'label'    => esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ),
-							'type'     => 'text',
-							'class'    => 'small',
-							'tooltip'  => '<h6>' . esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total count of all success transactions.', 'gfpaydock' )
-						),
-						array(
-							'name'     => 'end_date',
-							'label'    => esc_html__( 'Subscription End Date', 'gfpaydock' ),
-							'type'     => 'text',
-							'class'    => 'small datepicker ymd_dash',
-							'tooltip'  => '<h6>' . esc_html__( 'Subscription End Date', 'gfpaydock' ) . '</h6>' . esc_html__( 'Date when subscription will end automatically. Date Format <strong>(YYYY-MM-DD)</strong>.', 'gfpaydock' )
-						),
+
+						// array(
+						//  'name'     => 'end_amount_before',
+						//  'label'    => esc_html__( 'End Subscription Before Amount', 'gfpaydock' ),
+						//  'type'     => 'text',
+						//  'class'    => 'small',
+						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription Before Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (not to exceed).', 'gfpaydock' )
+						// ),
+						// array(
+						//  'name'     => 'end_amount_total',
+						//  'label'    => esc_html__( 'End Subscription Total Amount', 'gfpaydock' ),
+						//  'type'     => 'text',
+						//  'class'    => 'small',
+						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription Total Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount to be payed with subscription (equals). NOTE: If last payment of subscription schedule will be less then $ 1.00, some of gateways could respond with error and subscription status will become <strong>failed</strong>.', 'gfpaydock' )
+						// ),
+						// array(
+						//  'name'     => 'end_transactions',
+						//  'label'    => esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ),
+						//  'type'     => 'text',
+						//  'class'    => 'small',
+						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total count of all success transactions.', 'gfpaydock' )
+						// ),
+						// array(
+						//  'name'     => 'end_date',
+						//  'label'    => esc_html__( 'Subscription End Date', 'gfpaydock' ),
+						//  'type'     => 'text',
+						//  'class'    => 'small datepicker ymd_dash',
+						//  'tooltip'  => '<h6>' . esc_html__( 'Subscription End Date', 'gfpaydock' ) . '</h6>' . esc_html__( 'Date when subscription will end automatically. Date Format <strong>(YYYY-MM-DD)</strong>.', 'gfpaydock' )
+						// ),
 
 
 					)
@@ -273,6 +309,8 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		public function subscribe( $feed, $submission_data, $form, $entry ) {
 			$error ='';
 			if ( !empty( $_POST['paydock_customer_id'] ) ) {
+
+
 				$data = array(
 					'amount'=>$submission_data['payment_amount'],
 					'currency'=>$entry['currency'],
@@ -282,13 +320,12 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					'schedule'=>array(
 						'frequency'=>$feed['meta']['billingCycle_length'],
 						'interval'=>$feed['meta']['billingCycle_unit'],
-						'end_date'=>$feed['meta']['end_date'],
-						'end_amount_after'=>$feed['meta']['end_amount_after'],
-						'end_amount_before'=>$feed['meta']['end_amount_before'],
-						'end_amount_total'=>$feed['meta']['end_amount_total'],
-						'end_transactions'=>$feed['meta']['end_transactions'],
 					),
 				);
+				if ( !empty( $feed['meta']['transaction_end'] ) ) {
+					$data['schedule'][$feed['meta']['transaction_end']] =$feed['meta']['transaction_end_value'];
+				}
+
 
 				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
 

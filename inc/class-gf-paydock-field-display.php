@@ -27,6 +27,9 @@ if ( class_exists( 'GFForms' ) ) {
 			if ( ! empty( $this->fields ) && is_array( $this->fields ) ) {
 
 				$field_html = '';
+				$number_of_tabs = 0;
+
+				$tabs_heading = '<div class="gravity-forms-paydock-tabs-head">';
 				$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
 
 				foreach ( $this->fields as $field ) {
@@ -34,8 +37,11 @@ if ( class_exists( 'GFForms' ) ) {
 					if ( $field->type == 'paydock_credit_card' ) {
 						$width = $height = '400';
 						if ( !empty( $field->config_token ) ) {
-							$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
 							$ref_id = mt_rand( 1000, 1000000000 );
+
+							$tabs_heading  .='<a href="javascript:void(0)" class="tab-'.$ref_id.'">'.$field->tab_label.'</a>';
+							$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
+
 							$url_params = $this->get_url_params( $field );
 							$widget_url =  isset( $settings['paydock_api_mode'] ) && $settings['paydock_api_mode'] == 'Live' ? GF_PAYDOCK_WIDGET_API_LIVE_URL : GF_PAYDOCK_WIDGET_API_SANDBOX_URL;
 
@@ -48,32 +54,49 @@ if ( class_exists( 'GFForms' ) ) {
 								$height = $field->paydock_cc_iframe_height;
 							}
 
-							$field_html .= "<div class='ginput_container ginput_container_email'>
-				                            <iframe src='".$url."' width='".$width."' height='".$height."' ></iframe>
-				                            <input type='hidden' name='paydock_ref_id' id='paydock_ref_id' value='' >
-				                        </div>";
+							$field_html .= '<div id="tab-'.$ref_id.'"  class ="tabs_container ginput_container">
+				                            <iframe src="'.$url.'" width="'.$width.'" height="'.$height.'" ></iframe>
+				                            <input type="hidden" name="paydock_ref_id" id="paydock_ref_id" value="" >
+				                        </div>';
 							// hide the submit button
 							add_filter( 'gform_submit_button', '__return_false' );
-
+							$number_of_tabs++;
 						}
 
 					} elseif ( $field->type == 'paydock_paypal' ) {
+						$tab_id = mt_rand( 1000, 1000000000 );
+						$tabs_heading  .='<a href="javascript:void(0)" class="tab-'.$tab_id.'">'.$field->tab_label.'</a>';
+
+						$data = array(
+							'mode'=>'test',
+							'type'=>'paypal',
+							'gateway_id'=>'585a5aa624a02f3029436761',
+							'success_redirect_url'=>'http://paydock.dev/',
+							'error_redirect_url'=>'http://paydock.dev/',
+							'description'=> 'My test PayDock description'
+						);
+						$response = Gravity_Paydock()->make_request( 'POST', '/payment_sources/external_checkout', $data );
+						// echo '<pre>';
+						// var_dump($response);
+						// echo '</pre>';
+						$field_html .= '<div id="tab-'.$tab_id.'" class ="tabs_container ginput_container">';
 						$field_html .="Here goes paypal button";
+						$field_html .= '</div>';
+						$number_of_tabs++;
 					}
 				}
 			}
 
-
+			if ( $number_of_tabs > 1 ) {
+				return $tabs_heading.$field_html;
+			}else {
+				//add the class to show the single container
+				$field_html = str_replace( 'tabs_container', 'tabs_container show_tab', $field_html );
+			}
 			return $field_html;
 
 		}
 
-		public function get_form_editor_button() {
-			return array(
-				'group' => 'paydock_fields_front',
-				'text'  => $this->get_form_editor_field_title()
-			);
-		}
 
 		public function get_url_params( $field ) {
 			$url = $card = '';
@@ -117,6 +140,17 @@ if ( class_exists( 'GFForms' ) ) {
 			}
 			return $url;
 
+		}
+
+		public function get_form_inline_script_on_page_render( $form ) {
+			return 'jQuery(".gravity-forms-paydock-tabs-head a").eq(0).trigger("click")';
+		}
+
+		public function get_form_editor_button() {
+			return array(
+				'group' => 'paydock_fields_front',
+				'text'  => $this->get_form_editor_field_title()
+			);
 		}
 
 	}

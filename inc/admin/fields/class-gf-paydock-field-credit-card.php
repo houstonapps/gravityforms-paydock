@@ -11,6 +11,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 		function get_form_editor_field_settings() {
 			return array(
+				'tab_label',
 				'config_token',
 				'paydock_cc_iframe_width',
 				'paydock_cc_iframe_height',
@@ -58,7 +59,8 @@ if ( class_exists( 'GFForms' ) ) {
 		public function get_form_editor_inline_script_on_page_render() {
 			$script = "
 					jQuery(document).bind( 'gform_load_field_settings', function( event, field, form ) {
-						//console.log(field.paydock_supported_ctype_solo);
+						//console.log(field);
+						jQuery( '#tab_label' ).val( field.tab_label == undefined ? '' : field.tab_label );
 						jQuery( '#config_token' ).val( field.config_token == undefined ? '' : field.config_token );
 						jQuery( '#paydock_supported_ctype_visa' ).prop( 'checked',field.paydock_supported_ctype_visa == undefined ? false : field.paydock_supported_ctype_visa );
 						jQuery( '#paydock_supported_ctype_mastercard' ).prop( 'checked',field.paydock_supported_ctype_mastercard == undefined ? false : field.paydock_supported_ctype_mastercard );

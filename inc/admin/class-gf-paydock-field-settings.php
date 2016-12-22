@@ -9,6 +9,14 @@ class GF_Paydock_Field_Settings {
 	public function add_configuration_token_box( $pos, $form_id ) {
 		if ( $pos == 200 ) {
 		?>
+			<li class="tab_label field_setting">
+			<label for="tab_label" class="section_label">
+				<?php esc_html_e( 'Tab Label', 'gravityforms' ); ?>
+				<?php //gform_tooltip( 'form_field_label' ) ?>
+				<?php //gform_tooltip( 'form_field_label_html' ) ?>
+			</label>
+			<input type="text" id="tab_label" class="fieldwidth-3" onkeyup="SetFieldProperty('tab_label', this.value);" size="35" />
+		</li>
 		<li class="config_token field_setting">
 			<label for="field_config_token" class="section_label">
 				<?php esc_html_e( 'Configuration Token', 'gfpaydock' ); ?>

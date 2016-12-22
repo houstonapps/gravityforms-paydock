@@ -95,6 +95,7 @@ class Gravity_Paydock {
 
 	public function add_scripts() {
 		wp_enqueue_script( 'paydock-frontend', self::$url.'/js/paydock-frontend.js', array( 'jquery' ), false, false );
+		wp_enqueue_style( 'paydock-front', self::$url.'/css/paydock-front.css' );
 	}
 
 	public function add_admin_scripts() {
@@ -104,7 +105,6 @@ class Gravity_Paydock {
 		wp_enqueue_style( 'paydock-admin', self::$url.'/css/paydock-admin.css' );
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'gform_datepicker_init');
-
 
 		wp_enqueue_script( 'paydock-admin', self::$url.'/js/paydock-admin.js', array( 'wp-color-picker' ), false, true );
 	}

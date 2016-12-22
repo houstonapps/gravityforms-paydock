@@ -1,0 +1,27 @@
+.gfield + .gravity-forms-paydock-tabs-head {
+    margin-top: 1.8em;
+}
+
+.gravity-forms-paydock-tabs-head a {
+    display: inline-block;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+.gravity-forms-paydock-tabs-head a + a {
+    margin-left: -1px;
+    position: relative;
+}
+
+.gravity-forms-paydock-tabs-head a.current {
+    background: #eee;
+}
+.tabs_container{
+	display: none;
+}
+
+.tabs_container.show_tab{
+	display: block;
+}

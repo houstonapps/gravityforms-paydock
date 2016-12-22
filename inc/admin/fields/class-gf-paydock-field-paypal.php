@@ -10,7 +10,7 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		function get_form_editor_field_settings() {
-			return '';
+			return array( 'tab_label' );
 		}
 
 		public function get_form_editor_button() {

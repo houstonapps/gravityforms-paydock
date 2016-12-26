@@ -4,11 +4,12 @@ class GF_Paydock_Field_Settings {
 	function __construct() {
 		add_filter( 'gform_field_standard_settings', array( $this, 'add_configuration_token_box' ), 10, 2 );
 		add_action( 'gform_field_advanced_settings', array( $this, 'credit_card_field_advanced_settings' ), 10, 2 );
+		//$gateways = $this->get_paypal_gateways(); echo '<pre>';print_r($gateways);die;
 	}
 
 	public function add_configuration_token_box( $pos, $form_id ) {
 		if ( $pos == 200 ) {
-		?>
+?>
 			<li class="tab_label field_setting">
 			<label for="tab_label" class="section_label">
 				<?php esc_html_e( 'Tab Label', 'gravityforms' ); ?>
@@ -26,6 +27,21 @@ class GF_Paydock_Field_Settings {
 			<p>Paste in configuration token here.</p>
 		</li>
 
+		<li class="paypal_gateway field_setting">
+			<label for="paypal_gateway" class="section_label">
+				<?php esc_html_e( 'Select Gateway', 'gravityforms' ); ?>
+
+			</label>
+			<?php $gateways = $this->get_paypal_gateways();  ?>
+			<select id="paypal_gateway" onchange="SetFieldProperty('paypal_gateway', this.value);">
+			<option value=''>Select Gateway</option>
+			<?php foreach ( $gateways as $gateway): ?>
+			<option value="<?php echo $gateway->_id; ?>"> <?php echo $gateway->name; ?></option>
+			<?php endforeach ?>
+			</select>
+			<!-- <input type="text" id="paypal_gateway" class="fieldwidth-3" onkeyup="SetFieldProperty('paypal_gateway', this.value);" size="35" /> -->
+		</li>
+
 		<?php
 		}
 	}
@@ -34,7 +50,7 @@ class GF_Paydock_Field_Settings {
 
 		//create settings on position 50 (right after Admin Label)
 		if ( $position == 50 ) {
-			?>
+?>
 
 			<li class="paydock_cc_iframe_width field_setting">
 					<label for="paydock_cc_iframe_width" class="section_label">
@@ -42,7 +58,7 @@ class GF_Paydock_Field_Settings {
 						<?php //gform_tooltip( 'paydock_cc_iframe_text_color' ) ?>
 					</label>
 					<input placeholder="300" type="text" id="paydock_cc_iframe_width" onblur="SetFieldProperty('paydock_cc_iframe_width', this.value);" size="30" />
-				</li>
+			</li>
 				<li class="paydock_cc_iframe_height field_setting">
 					<label for="paydock_cc_iframe_height" class="section_label">
 						<?php esc_html_e( 'Iframe Height', 'gfpaydock' ); ?>
@@ -139,6 +155,30 @@ class GF_Paydock_Field_Settings {
 
 		<?php
 		}
+	}
+
+	public function get_paypal_gateways() {
+		$gateway_exists = false;
+		$paypal_gateway =array( );
+		$response = Gravity_Paydock()->make_request( 'GET', '/gateways' );
+
+		if ( empty( $response->error ) ) {
+			if ( !empty( $response->resource->data ) ) {
+				foreach ( $response->resource->data as $gateway ) {
+					if ( $gateway->type == 'PaypalClassic' ) {
+						$paypal_gateway[$gateway->_id] = $gateway;
+						$gateway_exists = true;
+					}
+				}
+			}
+		}
+
+		if ( $gateway_exists ) {
+			set_transient('paydock_paypal_gateway_list',$paypal_gateway);
+			return $paypal_gateway;
+		}
+		return  array((object)array( '_id'=>'', 'name'=>'No PayPal Gateway Found' ));
+
 	}
 
 }

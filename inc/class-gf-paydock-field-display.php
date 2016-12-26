@@ -63,29 +63,41 @@ if ( class_exists( 'GFForms' ) ) {
 							$number_of_tabs++;
 						}
 
-					} elseif ( $field->type == 'paydock_paypal' ) {
+					} elseif ( $field->type == 'paydock_paypal' && !empty( $field->paypal_gateway ) ) {
 						$tab_id = mt_rand( 1000, 1000000000 );
 						$tabs_heading  .='<a href="javascript:void(0)" class="tab-'.$tab_id.'">'.$field->tab_label.'</a>';
+						/**
+						 * Todo : Check if transient exists
+						 * @var [type]
+						 */
+						$list = get_transient('paydock_paypal_gateway_list');
 
+						$gateway = $list[$field->paypal_gateway];
 						$data = array(
-							'mode'=>'test',
+							'mode'=>$gateway->mode,
 							'type'=>'paypal',
-							'gateway_id'=>'585a5aa624a02f3029436761',
-							'success_redirect_url'=>'http://paydock.dev/',
-							'error_redirect_url'=>'http://paydock.dev/',
-							'description'=> 'My test PayDock description'
+							'gateway_id'=>$gateway->_id,
+							'success_redirect_url'=>home_url(),
+							'error_redirect_url'=>home_url(),
+							//'description'=> 'My test PayDock description'
 						);
 						$response = Gravity_Paydock()->make_request( 'POST', '/payment_sources/external_checkout', $data );
-						// echo '<pre>';
-						// var_dump($response);
-						// echo '</pre>';
 						$field_html .= '<div id="tab-'.$tab_id.'" class ="tabs_container ginput_container">';
-						$field_html .="Here goes paypal button";
+
+						if ( empty( $response->error ) ) {
+							$checkout_link = $response->resource->data->link;
+							$field_html .='<a class="gf-paydock-paypalcheckout-link"  href="'.$checkout_link.'"><img src="'.GF_PAYDOCK_URL.'/img/paypalexpress.png"></a>';
+							$reference_id = $response->resource->data->reference_id;
+							$gateway->token =$response->resource->data->token;
+							set_transient( $reference_id, $gateway, 60*60 );
+						}
+
 						$field_html .= '</div>';
 						$number_of_tabs++;
 					}
 				}
 			}
+			$tabs_heading.='</div>';
 
 			if ( $number_of_tabs > 1 ) {
 				return $tabs_heading.$field_html;
@@ -143,7 +155,40 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		public function get_form_inline_script_on_page_render( $form ) {
-			return 'jQuery(".gravity-forms-paydock-tabs-head a").eq(0).trigger("click")';
+			return "jQuery('.gravity-forms-paydock-tabs-head a').eq(0).trigger('click');
+
+					    jQuery('.gf-paydock-paypalcheckout-link').click(function(e) {
+			            e.preventDefault();
+			            var authUrl = jQuery(this).attr('href');
+			            if (authUrl == '') {
+			               // alert('Please add and save Client ID and Client Secret first.')
+			                return false;
+			            }
+			            var win = window.open(jQuery(this).attr('href'), 'paypalcheckoutauthwindow', 'width=1000, height=600');
+			            var pollTimer = window.setInterval(function() {
+			                try {
+
+			                    if (win.document.URL.indexOf('".home_url()."') != -1) {
+			                        window.clearInterval(pollTimer);
+			                        var response_url = win.document.URL;
+			                        var token = gf_paydock_gup(response_url, 'token');
+			                        win.close();
+			                        // We don't have an access token yet, have to go to the server for it
+			                        var data = {
+			                            action: 'gf_paydock_save_paypal_checkout_token',
+			                            token: decodeURIComponent(token)
+			                        };
+			                      jQuery.post('".admin_url( 'admin-ajax.php' )."', data, function(response) {
+			                      	//console.log(response)
+			                      		if(response != 'error'){
+			                            jQuery('#paydock_ref_id').val(response);
+         						   		jQuery('#paydock_ref_id').closest('form').submit();
+         						   	}
+			                        });
+			                    }
+			                } catch (e) {}
+			            }, 500);
+			        })";
 		}
 
 		public function get_form_editor_button() {

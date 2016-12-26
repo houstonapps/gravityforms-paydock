@@ -10,7 +10,10 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		function get_form_editor_field_settings() {
-			return array( 'tab_label' );
+			return array(
+				'tab_label',
+				'paypal_gateway'
+			);
 		}
 
 		public function get_form_editor_button() {
@@ -45,6 +48,17 @@ if ( class_exists( 'GFForms' ) ) {
 			return "<div class='ginput_container ginput_container'>
 							<input name='input_{$id}' id='{$field_id}' type='text' value='' class='{$class}' disabled='disabled' />
 						</div>";;
+		}
+
+			public function get_form_editor_inline_script_on_page_render() {
+			$script = "
+					jQuery(document).bind( 'gform_load_field_settings', function( event, field, form ) {
+						//console.log(field);
+						jQuery( '#tab_label' ).val( field.tab_label == undefined ? '' : field.tab_label );
+						jQuery( '#paypal_gateway' ).val( field.paypal_gateway == undefined ? '' : field.paypal_gateway );
+
+					});";
+			return $script;
 		}
 
 	}

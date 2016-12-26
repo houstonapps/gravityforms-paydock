@@ -41,7 +41,7 @@ class GF_Paydock_AddOn_Bootstrap {
 		// == Frontend ==
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
 		require_once GF_PAYDOCK_DIR.'/inc/webhook-listener.php';
-
+		require_once GF_PAYDOCK_DIR.'/inc/ajax-handler.php';
 	}
 }
 
@@ -140,10 +140,13 @@ class Gravity_Paydock {
 		// make the request
 		$req_args = array(
 			'method'    => $method,
-			'body'      => json_encode( $params ),
 			'headers'   => $headers,
 			'sslverify' => true  // set to true in live envrio
 		);
+
+		if($params){
+			$req_args['body'] = json_encode( $params );
+		}
 
 		// make the remote request
 		$result = wp_remote_request( $url, $req_args );

@@ -326,11 +326,15 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					$data['schedule'][$feed['meta']['transaction_end']] =$feed['meta']['transaction_end_value'];
 				}
 
-
 				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
-
+				// echo '<pre>';
+				// var_dump($response->resource->data->_id);
 				if ( empty( $response->error ) ) {
-					$transaction_id = $response->resource->data->transactions[0]->_id;
+					if ( !empty( $response->resource->data->transactions[0]->_id ) ) {
+						$transaction_id = $response->resource->data->transactions[0]->_id;
+					}else {
+						$transaction_id = $response->resource->data->_id;
+					}
 					$result=  array(
 						'is_success' => true,
 						'error_message' => '',

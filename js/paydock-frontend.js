@@ -1,6 +1,6 @@
 (function($) {
     $(function() {
-        $("body").on("click", ".gravity-forms-paydock-tabs-head a", function(e) {
+        $(document).on('click', '.gravity-forms-paydock-tabs-head a', function(e) {
             e.preventDefault();
             var tab_id = $(this).attr('class')
             $('.gravity-forms-paydock-tabs-head a').removeClass('current');

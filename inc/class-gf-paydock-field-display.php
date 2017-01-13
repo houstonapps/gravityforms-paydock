@@ -39,7 +39,7 @@ if ( class_exists( 'GFForms' ) ) {
 						if ( !empty( $field->config_token ) ) {
 							$ref_id = mt_rand( 1000, 1000000000 );
 
-							$tabs_heading  .='<a href="javascript:void(0)" class="tab-'.$ref_id.'">'.$field->tab_label.'</a>';
+							$tabs_heading  .='<a href="javascript:void(0)" data-tab-id="tab-'.$ref_id.'">'.$field->tab_label.'</a>';
 							$settings = get_option( 'gravityformsaddon_gfpaydock_settings' );
 
 							$url_params = $this->get_url_params( $field );
@@ -65,12 +65,13 @@ if ( class_exists( 'GFForms' ) ) {
 
 					} elseif ( $field->type == 'paydock_paypal' && !empty( $field->paypal_gateway ) ) {
 						$tab_id = mt_rand( 1000, 1000000000 );
-						$tabs_heading  .='<a href="javascript:void(0)" class="tab-'.$tab_id.'">'.$field->tab_label.'</a>';
+						$tabs_heading  .='<a href="javascript:void(0)" data-tab-id="tab-'.$tab_id.'">'.$field->tab_label.'</a>';
 						/**
 						 * Todo : Check if transient exists
+						 *
 						 * @var [type]
 						 */
-						$list = get_transient('paydock_paypal_gateway_list');
+						$list = get_transient( 'paydock_paypal_gateway_list' );
 
 						$gateway = $list[$field->paypal_gateway];
 						$data = array(
@@ -84,7 +85,7 @@ if ( class_exists( 'GFForms' ) ) {
 						$response = Gravity_Paydock()->make_request( 'POST', '/payment_sources/external_checkout', $data );
 						$field_html .= '<div id="tab-'.$tab_id.'" class ="tabs_container ginput_container">';
 
-						if ( empty( $response->error ) ) {
+						if ( empty( $response->error ) && is_object( $response ) ) {
 							$checkout_link = $response->resource->data->link;
 							$field_html .='<a class="gf-paydock-paypalcheckout-link"  href="'.$checkout_link.'"><img src="'.GF_PAYDOCK_URL.'/img/paypalexpress.png"></a>';
 							$reference_id = $response->resource->data->reference_id;

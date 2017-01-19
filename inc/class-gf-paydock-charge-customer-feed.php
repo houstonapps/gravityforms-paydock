@@ -48,21 +48,29 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		public function parse_charge_form( $form ) {
 
 			if ( !empty( $_GET['id'] ) && !empty( $_GET['customerid'] ) ) {
-				$customer_data = gform_get_meta( base64_decode( $_GET['id'] ), 'paydock_customer_data' );
-				if ( !empty( $customer_data[ 'customer_id' ] ) && $customer_data[ 'customer_id' ] == base64_decode( $_GET['customerid'] ) ) {
+				// entry id of create customer form
+				$entry_id = sanitize_text_field( base64_decode( $_GET['id'] ) );
+				$customer_data = gform_get_meta( $entry_id, 'paydock_customer_data' );
+
+				// donor id saved in create customer entry
+				$donor_id = gform_get_meta( $entry_id, 'donor_id' );
+				if ( !empty( $customer_data[ 'customer_id' ] ) && $customer_data[ 'customer_id' ] == sanitize_text_field( base64_decode( $_GET['customerid'] ) ) ) {
 					$info = !empty( $customer_data['first_name'] )? '<div>'.$customer_data['first_name'].' ':'';
-					$info .= !empty( $customer_data['first_name'] )? $customer_data['last_name'].'</div>':'';
-					$info .= !empty( $customer_data['first_name'] )? '<div>'.$customer_data['email'].'</div>':'';
+					$info .= !empty( $customer_data['last_name'] )? $customer_data['last_name'].'':'';
+					$info .= !empty( $customer_data['email'] )? '</div><div>'.$customer_data['email'].'</div>':'';
 
 					$section_break = array( 'type' => 'section', 'label'=>'Your Information' );
 					$customer_properties = array( 'type' => 'html', 'content'=>$info );
-					$customer_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$_GET['customerid'], 'cssClass'=>'paydock-customer-id' );
-
+					$customer_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$customer_data[ 'customer_id' ], 'cssClass'=>'paydock-customer-id' );
+					if ( !empty( $donor_id ) ) {
+						$donor_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$donor_id, 'cssClass'=>'paydock-donor-id' );
+					}
 					$section_field = GF_Fields::create( $section_break );
 					$customer_field = GF_Fields::create( $customer_properties );
 					$customer_id_hidden_field = GF_Fields::create( $customer_id_properties );
-					array_unshift( $form['fields'], $section_field, $customer_field, $customer_id_hidden_field );
-					//array_unshift($form['fields'],$section_field);
+					$donor_id_hidden_field = GF_Fields::create( $donor_id_properties );
+					array_unshift( $form['fields'], $section_field, $customer_field, $customer_id_hidden_field, $donor_id_hidden_field );
+
 					return $form;
 				}
 
@@ -75,7 +83,10 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		function add_hidden_field_to_charge_form( $input, $field, $value, $lead_id, $form_id ) {
 			if ( $field->cssClass == 'paydock-customer-id' ) {
 				$input = '<input name="paydock_customer_id" id="paydock_customer_id" type="hidden" class="gform_hidden" aria-invalid="false" value="'.$value.'">';
+			} elseif ( $field->cssClass == 'paydock-donor-id' ) {
+				$input = '<input name="paydock_donor_id" id="paydock_donor_id" type="hidden" class="gform_hidden" aria-invalid="false" value="'.$value.'">';
 			}
+
 			return $input;
 		}
 
@@ -178,34 +189,6 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 							'class'    => 'small',
 						),
 
-						// array(
-						//  'name'     => 'end_amount_before',
-						//  'label'    => esc_html__( 'End Subscription Before Amount', 'gfpaydock' ),
-						//  'type'     => 'text',
-						//  'class'    => 'small',
-						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription Before Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount of all success transactions (not to exceed).', 'gfpaydock' )
-						// ),
-						// array(
-						//  'name'     => 'end_amount_total',
-						//  'label'    => esc_html__( 'End Subscription Total Amount', 'gfpaydock' ),
-						//  'type'     => 'text',
-						//  'class'    => 'small',
-						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription Total Amount', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total amount to be payed with subscription (equals). NOTE: If last payment of subscription schedule will be less then $ 1.00, some of gateways could respond with error and subscription status will become <strong>failed</strong>.', 'gfpaydock' )
-						// ),
-						// array(
-						//  'name'     => 'end_transactions',
-						//  'label'    => esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ),
-						//  'type'     => 'text',
-						//  'class'    => 'small',
-						//  'tooltip'  => '<h6>' . esc_html__( 'End Subscription after total transactions count', 'gfpaydock' ) . '</h6>' . esc_html__( 'Total count of all success transactions.', 'gfpaydock' )
-						// ),
-						// array(
-						//  'name'     => 'end_date',
-						//  'label'    => esc_html__( 'Subscription End Date', 'gfpaydock' ),
-						//  'type'     => 'text',
-						//  'class'    => 'small datepicker ymd_dash',
-						//  'tooltip'  => '<h6>' . esc_html__( 'Subscription End Date', 'gfpaydock' ) . '</h6>' . esc_html__( 'Date when subscription will end automatically. Date Format <strong>(YYYY-MM-DD)</strong>.', 'gfpaydock' )
-						// ),
 
 
 					)
@@ -264,15 +247,17 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 	 */
 
 		public function authorize( $feed, $submission_data, $form, $entry ) {
-			$error ='';
-			if ( !empty( $_POST['paydock_customer_id'] ) ) {
+			$donor_id = $error = '';
+			$customer_id = sanitize_text_field( $_POST['paydock_customer_id'] );
+			$donor_id = sanitize_text_field( $_POST['paydock_donor_id'] );
+			if ( !empty( $customer_id ) ) {
 
 				$data = array(
 					"amount"=>$submission_data['payment_amount'],
 					"currency"=>$entry['currency'],
-					//"reference"=> $entry['id'],
+					"reference"=> $donor_id,
 					"description"=> "Charge using Form ".$form['id'],
-					"customer_id"=>base64_decode( $_POST['paydock_customer_id'] )
+					"customer_id"=>$customer_id
 				);
 				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
 				// echo '<pre>';
@@ -307,16 +292,17 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		//
 
 		public function subscribe( $feed, $submission_data, $form, $entry ) {
-			$error ='';
-			if ( !empty( $_POST['paydock_customer_id'] ) ) {
-
+			$donor_id = $error = '';
+			$customer_id = sanitize_text_field( $_POST['paydock_customer_id'] );
+			$donor_id = sanitize_text_field( $_POST['paydock_donor_id'] );
+			if ( !empty( $customer_id ) ) {
 
 				$data = array(
 					'amount'=>$submission_data['payment_amount'],
 					'currency'=>$entry['currency'],
-					//'reference'=> $entry['id'],
+					'reference'=> $donor_id,
 					'description'=> 'Charge using Form '.$form['id'],
-					'customer_id'=>base64_decode( $_POST['paydock_customer_id'] ),
+					'customer_id'=>$customer_id,
 					'schedule'=>array(
 						'frequency'=>$feed['meta']['billingCycle_length'],
 						'interval'=>$feed['meta']['billingCycle_unit'],

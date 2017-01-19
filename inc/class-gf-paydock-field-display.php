@@ -180,7 +180,7 @@ if ( class_exists( 'GFForms' ) ) {
 			                            token: decodeURIComponent(token)
 			                        };
 			                      jQuery.post('".admin_url( 'admin-ajax.php' )."', data, function(response) {
-			                      	//console.log(response)
+			                      	console.log(response)
 			                      		if(response != 'error'){
 			                            jQuery('#paydock_ref_id').val(response);
          						   		jQuery('#paydock_ref_id').closest('form').submit();

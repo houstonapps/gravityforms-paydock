@@ -35,7 +35,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 		parent::init();
 
 		add_filter( 'gform_confirmation', array( $this, 'update_confirmation_url' ), 10, 3 );
-		add_filter( 'gform_settings_menu', array( $this, 'override_setting_tab_menu' ),99 );
+		add_filter( 'gform_settings_menu', array( $this, 'override_setting_tab_menu' ), 99 );
 
 
 	}
@@ -53,6 +53,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	 * @return bool|void
 	 */
 	public function process_feed( $feed, $entry, $form ) {
+		$payment_source_token ='';
 		// check if ref id is in $_POST
 		if ( !empty( $_POST['paydock_ref_id'] ) ) {
 			// get existing ref ids saved in db
@@ -68,9 +69,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			}
 		}
 
-		if ( $payment_source_token ) {
-			$feedName  = $feed['meta']['feedName'];
-
+		if ( !empty( $payment_source_token ) ) {
 			// Retrieve the name => value pairs for all fields mapped in the 'mappedFields' field map.
 			$field_map = $this->get_field_map_fields( $feed, 'mappedFields' );
 
@@ -84,21 +83,41 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			}
 
 			if ( !empty( $payment_source_token ) ) {
+				//check if donor exists
+				$donor_id = gform_get_meta( $entry['id'], 'donor_id' );
+				$endpoint = '/customers';
 				$data = array(
 					'first_name' => $merge_vars['first_name'],
 					'last_name'  => $merge_vars['last_name'],
 					'email'      => $merge_vars['email'],
 					'phone'      => $merge_vars['phone'],
 					'token'      => $payment_source_token,
-					'ref_id'     => $entry['id']
+					'ref_id'     => ! empty( $donor_id ) ? $donor_id : $entry['id']
 				);
-				$response = Gravity_Paydock()->make_request( 'POST', '/customers', $data );
+
+
+				// check if customer id exists for donor
+				if ( ! empty( $donor_id ) ) {
+					$customer_id = get_post_meta( $donor_id, 'paydock_customer_id',true );
+					if ( $customer_id ) {
+						$endpoint='/customers/'.$customer_id;
+
+					}
+				}
+				$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
 
 				if ( empty( $response->error ) ) {
 					$customer_id = $response->resource->data->_id;
 					$data['customer_id'] = $customer_id;
 					gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
+
+					// save customer id to Donor meta
+
+					if ( !empty( $donor_id ) && ! empty( $customer_id ) ) {
+						update_post_meta( $donor_id, 'paydock_customer_id', $customer_id );
+					}
 				}
+
 			}
 		}
 

@@ -33,7 +33,9 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	public function init() {
 
 		parent::init();
-
+		//   $payment_source = gform_get_meta( 26, 'paydock_customer_data' );
+		// // // $payment_source = get_option( 'paydock_payment_source' );
+		//  var_dump($payment_source); die;
 		add_filter( 'gform_confirmation', array( $this, 'update_confirmation_url' ), 10, 3 );
 		add_filter( 'gform_settings_menu', array( $this, 'override_setting_tab_menu' ), 99 );
 
@@ -53,7 +55,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	 * @return bool|void
 	 */
 	public function process_feed( $feed, $entry, $form ) {
-		$payment_source_token ='';
+		$payment_source_token = $donor_id = '';
 		// check if ref id is in $_POST
 		if ( !empty( $_POST['paydock_ref_id'] ) ) {
 			// get existing ref ids saved in db
@@ -68,7 +70,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 				}
 			}
 		}
-
+		//Rc_Cwh_Logger()->log( 'payment Source token saved is: ', $payment_source_token );
 		if ( !empty( $payment_source_token ) ) {
 			// Retrieve the name => value pairs for all fields mapped in the 'mappedFields' field map.
 			$field_map = $this->get_field_map_fields( $feed, 'mappedFields' );
@@ -82,43 +84,56 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 
 			}
 
-			if ( !empty( $payment_source_token ) ) {
-				//check if donor exists
-				$donor_id = gform_get_meta( $entry['id'], 'donor_id' );
-				$endpoint = '/customers';
-				$data = array(
-					'first_name' => $merge_vars['first_name'],
-					'last_name'  => $merge_vars['last_name'],
-					'email'      => $merge_vars['email'],
-					'phone'      => $merge_vars['phone'],
-					'token'      => $payment_source_token,
-					'ref_id'     => ! empty( $donor_id ) ? $donor_id : $entry['id']
-				);
+			//check if donor exists
+			$donor_id = gform_get_meta( $entry['id'], 'donor_id' );
+			$endpoint = '/customers';
+			$data = array(
+				'first_name' => $merge_vars['first_name'],
+				'last_name'  => $merge_vars['last_name'],
+				'email'      => $merge_vars['email'],
+				'phone'      => $merge_vars['phone'],
+				'token'      => $payment_source_token,
+				'ref_id'     => ! empty( $donor_id ) ? $donor_id : $entry['id']
+			);
 
 
-				// check if customer id exists for donor
-				if ( ! empty( $donor_id ) ) {
-					$customer_id = get_post_meta( $donor_id, 'paydock_customer_id',true );
-					if ( $customer_id ) {
-						$endpoint='/customers/'.$customer_id;
+			// check if customer id exists for donor
+			if ( ! empty( $donor_id ) ) {
+				$customer_id = get_post_meta( $donor_id, 'paydock_customer_id', true );
+				if ( $customer_id ) {
+					$endpoint='/customers/'.$customer_id;
 
-					}
 				}
-				$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
-
-				if ( empty( $response->error ) ) {
-					$customer_id = $response->resource->data->_id;
-					$data['customer_id'] = $customer_id;
-					gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
-
-					// save customer id to Donor meta
-
-					if ( !empty( $donor_id ) && ! empty( $customer_id ) ) {
-						update_post_meta( $donor_id, 'paydock_customer_id', $customer_id );
-					}
-				}
-
 			}
+			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
+			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
+			$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
+			//Rc_Cwh_Logger()->log( '==== Create Customer response ====', $response );
+			if ( empty( $response->error ) ) {
+
+				// Add note to Gravity Form Entry
+
+				if ( $customer_id ) {
+					// we are updating customer
+					$this->add_note( $entry['id'], 'Updated Paydock Customer Id:'.$customer_id.' Donor Id:" >'.$donor_id, 'success' );
+				}else{
+					$customer_id = $response->resource->data->_id;
+					$this->add_note( $entry['id'], 'Added Paydock Customer Id:'.$customer_id.' Donor Id:'.$donor_id, 'success' );
+				}
+
+
+				$data['customer_id'] = $customer_id;
+				gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
+
+
+				// save customer id to Donor meta
+
+				if ( !empty( $donor_id ) && ! empty( $customer_id ) ) {
+					update_post_meta( $donor_id, 'paydock_customer_id', $customer_id );
+				}
+			}
+
+
 		}
 
 	}
@@ -238,42 +253,6 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 								'required'   => 0,
 
 							),
-							/*Not used during creating customer object process*/
-							// array(
-							//  'name'       => 'address_line_1',
-							//  'label'      => esc_html__( 'Address Line 1', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ),array(
-							//  'name'       => 'address_line_2',
-							//  'label'      => esc_html__( 'Address Line 2', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ),
-							// array(
-							//  'name'       => 'state',
-							//  'label'      => esc_html__( 'State/Province/Region', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ), array(
-							//  'name'       => 'country',
-							//  'label'      => esc_html__( 'Country', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ),
-							// array(
-							//  'name'       => 'city',
-							//  'label'      => esc_html__( 'City', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ),
-							// array(
-							//  'name'       => 'postcode',
-							//  'label'      => esc_html__( 'ZIP/Postal code', 'gfpaydock' ),
-							//  'required'   => 0,
-
-							// ),
-
 
 						),
 					),

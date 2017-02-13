@@ -87,13 +87,14 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			//check if donor exists
 			$donor_id = gform_get_meta( $entry['id'], 'donor_id' );
 			$endpoint = '/customers';
+			$ref_id = ! empty( $donor_id ) ? $donor_id : $entry['id'];
 			$data = array(
 				'first_name' => $merge_vars['first_name'],
 				'last_name'  => $merge_vars['last_name'],
 				'email'      => $merge_vars['email'],
 				'phone'      => $merge_vars['phone'],
 				'token'      => $payment_source_token,
-				'ref_id'     => ! empty( $donor_id ) ? $donor_id : $entry['id']
+				'reference'  => (string) $ref_id
 			);
 
 
@@ -105,6 +106,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 
 				}
 			}
+
 			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
 			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
 			$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
@@ -124,7 +126,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 
 				$data['customer_id'] = $customer_id;
 				gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
-
+				gform_update_meta( $entry['id'], 'paydock_total', $merge_vars['total'] );
 
 				// save customer id to Donor meta
 
@@ -253,6 +255,13 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 								'required'   => 0,
 
 							),
+							array(
+								'name'       => 'total',
+								'label'      => esc_html__( 'Total', 'gfpaydock' ),
+								'required'   => 1,
+
+							),
+
 
 						),
 					),

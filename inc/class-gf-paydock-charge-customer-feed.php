@@ -14,6 +14,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		protected $is_payment_gateway = false;
 
 		private static $_instance = null;
+		private $paydock_total;
 		/**
 		 * Get an instance of this class.
 		 *
@@ -42,8 +43,14 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 
 			parent::init_frontend();
 			add_filter( 'gform_pre_render',  array( $this, 'parse_charge_form' ) );
+			add_filter( 'gform_field_value_paydock_total', array( $this, 'set_price') );
 
 			add_filter( 'gform_field_input', array( $this, 'add_hidden_field_to_charge_form' ), 10, 5 );
+		}
+
+		public function set_price(){
+			return $this->paydock_total;
+			//var_dump($this->paydock_total);die;
 		}
 		public function parse_charge_form( $form ) {
 
@@ -51,26 +58,21 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				// entry id of create customer form
 				$entry_id = sanitize_text_field( base64_decode( $_GET['id'] ) );
 				$customer_data = gform_get_meta( $entry_id, 'paydock_customer_data' );
-
+				$this->paydock_total = gform_get_meta( $entry_id, 'paydock_total' );
 				// donor id saved in create customer entry
 				$donor_id = gform_get_meta( $entry_id, 'donor_id' );
 				if ( !empty( $customer_data[ 'customer_id' ] ) && $customer_data[ 'customer_id' ] == sanitize_text_field( base64_decode( $_GET['customerid'] ) ) ) {
-					$info = !empty( $customer_data['first_name'] )? '<div>'.$customer_data['first_name'].' ':'';
-					$info .= !empty( $customer_data['last_name'] )? $customer_data['last_name'].'':'';
-					$info .= !empty( $customer_data['email'] )? '</div><div>'.$customer_data['email'].'</div>':'';
 
-					$section_break = array( 'type' => 'section', 'label'=>'Your Information' );
-					$customer_properties = array( 'type' => 'html', 'content'=>$info );
 					$customer_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$customer_data[ 'customer_id' ], 'cssClass'=>'paydock-customer-id' );
 					if ( !empty( $donor_id ) ) {
 						$donor_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$donor_id, 'cssClass'=>'paydock-donor-id' );
 					}
-					$section_field = GF_Fields::create( $section_break );
-					$customer_field = GF_Fields::create( $customer_properties );
+
 					$customer_id_hidden_field = GF_Fields::create( $customer_id_properties );
 					$donor_id_hidden_field = GF_Fields::create( $donor_id_properties );
-					array_unshift( $form['fields'], $section_field, $customer_field, $customer_id_hidden_field, $donor_id_hidden_field );
-
+					array_unshift( $form['fields'], $customer_id_hidden_field, $donor_id_hidden_field );
+					// echo '<pre>';
+					// print_r($form); die;
 					return $form;
 				}
 

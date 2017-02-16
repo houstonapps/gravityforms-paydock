@@ -148,6 +148,7 @@ class Gravity_Paydock {
 			$req_args['body'] = json_encode( $params );
 		}
 
+
 		// make the remote request
 		$result = wp_remote_request( $url, $req_args );
 

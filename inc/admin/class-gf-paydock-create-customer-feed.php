@@ -55,7 +55,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	 * @return bool|void
 	 */
 	public function process_feed( $feed, $entry, $form ) {
-		$payment_source_token = $donor_id = '';
+		$payment_source_token = '';
 		// check if ref id is in $_POST
 		if ( !empty( $_POST['paydock_ref_id'] ) ) {
 			// get existing ref ids saved in db
@@ -84,28 +84,20 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 
 			}
 
-			//check if donor exists
-			$donor_id = gform_get_meta( $entry['id'], 'donor_id' );
 			$endpoint = '/customers';
-			$ref_id = ! empty( $donor_id ) ? $donor_id : $entry['id'];
+
 			$data = array(
 				'first_name' => $merge_vars['first_name'],
 				'last_name'  => $merge_vars['last_name'],
 				'email'      => $merge_vars['email'],
 				'phone'      => $merge_vars['phone'],
 				'token'      => $payment_source_token,
-				'reference'  => (string) $ref_id
+				'reference'  => (string) $entry['id']
 			);
 
+			$data = apply_filters( 'pd_create_customer_details', $data, $entry['id'] );
 
-			// check if customer id exists for donor
-			if ( ! empty( $donor_id ) ) {
-				$customer_id = get_post_meta( $donor_id, 'paydock_customer_id', true );
-				if ( $customer_id ) {
-					$endpoint='/customers/'.$customer_id;
-
-				}
-			}
+			$endpoint = apply_filters( 'pd_create_customer_endpoint', '/customers', $entry['id'] );
 
 			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
 			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
@@ -117,22 +109,17 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 
 				if ( $customer_id ) {
 					// we are updating customer
-					$this->add_note( $entry['id'], 'Updated Paydock Customer Id:'.$customer_id.' Donor Id:" >'.$donor_id, 'success' );
-				}else{
+					$this->add_note( $entry['id'], 'Updated Paydock Customer Id:'.$customer_id, 'success' );
+				}else {
 					$customer_id = $response->resource->data->_id;
-					$this->add_note( $entry['id'], 'Added Paydock Customer Id:'.$customer_id.' Donor Id:'.$donor_id, 'success' );
+					$this->add_note( $entry['id'], 'Added Paydock Customer Id:'.$customer_id, 'success' );
 				}
-
 
 				$data['customer_id'] = $customer_id;
 				gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
 				gform_update_meta( $entry['id'], 'paydock_total', $merge_vars['total'] );
 
-				// save customer id to Donor meta
-
-				if ( !empty( $donor_id ) && ! empty( $customer_id ) ) {
-					update_post_meta( $donor_id, 'paydock_customer_id', $customer_id );
-				}
+				do_action( 'pd_after_create_customer', $response, $customer_id, $entry['id'] );
 			}
 
 

@@ -43,12 +43,12 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 
 			parent::init_frontend();
 			add_filter( 'gform_pre_render',  array( $this, 'parse_charge_form' ) );
-			add_filter( 'gform_field_value_paydock_total', array( $this, 'set_price') );
+			add_filter( 'gform_field_value_paydock_total', array( $this, 'set_price' ) );
 
 			add_filter( 'gform_field_input', array( $this, 'add_hidden_field_to_charge_form' ), 10, 5 );
 		}
 
-		public function set_price(){
+		public function set_price() {
 			return $this->paydock_total;
 			//var_dump($this->paydock_total);die;
 		}
@@ -59,18 +59,15 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$entry_id = sanitize_text_field( base64_decode( $_GET['id'] ) );
 				$customer_data = gform_get_meta( $entry_id, 'paydock_customer_data' );
 				$this->paydock_total = gform_get_meta( $entry_id, 'paydock_total' );
-				// donor id saved in create customer entry
-				$donor_id = gform_get_meta( $entry_id, 'donor_id' );
+
 				if ( !empty( $customer_data[ 'customer_id' ] ) && $customer_data[ 'customer_id' ] == sanitize_text_field( base64_decode( $_GET['customerid'] ) ) ) {
-
 					$customer_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$customer_data[ 'customer_id' ], 'cssClass'=>'paydock-customer-id' );
-					if ( !empty( $donor_id ) ) {
-						$donor_id_properties = array( 'type' => 'hidden', 'defaultValue'=>$donor_id, 'cssClass'=>'paydock-donor-id' );
-					}
-
 					$customer_id_hidden_field = GF_Fields::create( $customer_id_properties );
-					$donor_id_hidden_field = GF_Fields::create( $donor_id_properties );
-					array_unshift( $form['fields'], $customer_id_hidden_field, $donor_id_hidden_field );
+
+					array_unshift( $form['fields'], $customer_id_hidden_field );
+
+					$form = apply_filters( 'pd_charge_form', $form, $entry_id );
+
 					// echo '<pre>';
 					// print_r($form); die;
 					return $form;
@@ -85,10 +82,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		function add_hidden_field_to_charge_form( $input, $field, $value, $lead_id, $form_id ) {
 			if ( $field->cssClass == 'paydock-customer-id' ) {
 				$input = '<input name="paydock_customer_id" id="paydock_customer_id" type="hidden" class="gform_hidden" aria-invalid="false" value="'.$value.'">';
-			} elseif ( $field->cssClass == 'paydock-donor-id' ) {
-				$input = '<input name="paydock_donor_id" id="paydock_donor_id" type="hidden" class="gform_hidden" aria-invalid="false" value="'.$value.'">';
 			}
-
 			return $input;
 		}
 
@@ -249,18 +243,18 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 	 */
 
 		public function authorize( $feed, $submission_data, $form, $entry ) {
-			$donor_id = $error = '';
+			$error = '';
 			$customer_id = sanitize_text_field( $_POST['paydock_customer_id'] );
-			$donor_id = sanitize_text_field( $_POST['paydock_donor_id'] );
 			if ( !empty( $customer_id ) ) {
 
 				$data = array(
 					"amount"=>$submission_data['payment_amount'],
 					"currency"=>$entry['currency'],
-					"reference"=> $donor_id,
 					"description"=> "Charge using Form ".$form['id'],
 					"customer_id"=>$customer_id
 				);
+
+				$data = add_filters('pd_one_time_charge_data', $data );
 				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
 				// echo '<pre>';
 				// print_r( $response ); die;
@@ -294,15 +288,14 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 		//
 
 		public function subscribe( $feed, $submission_data, $form, $entry ) {
-			$donor_id = $error = '';
+			$error = '';
 			$customer_id = sanitize_text_field( $_POST['paydock_customer_id'] );
-			$donor_id = sanitize_text_field( $_POST['paydock_donor_id'] );
+
 			if ( !empty( $customer_id ) ) {
 
 				$data = array(
 					'amount'=>$submission_data['payment_amount'],
 					'currency'=>$entry['currency'],
-					'reference'=> $donor_id,
 					'description'=> 'Charge using Form '.$form['id'],
 					'customer_id'=>$customer_id,
 					'schedule'=>array(
@@ -313,6 +306,8 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				if ( !empty( $feed['meta']['transaction_end'] ) ) {
 					$data['schedule'][$feed['meta']['transaction_end']] =$feed['meta']['transaction_end_value'];
 				}
+
+				$data = add_filters('pd_subscription_charge_data', $data );
 
 				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
 				// echo '<pre>';

@@ -307,7 +307,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					$data['schedule'][$feed['meta']['transaction_end']] =$feed['meta']['transaction_end_value'];
 				}
 
-				$data = add_filters('pd_subscription_charge_data', $data );
+				$data = apply_filters('pd_subscription_charge_data', $data );
 
 				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
 				// echo '<pre>';

@@ -33,7 +33,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	public function init() {
 
 		parent::init();
-		//   $payment_source = gform_get_meta( 26, 'paydock_customer_data' );
+		//   $payment_source = gform_get_meta( 27, 'paydock_customer_data' );
 		// // // $payment_source = get_option( 'paydock_payment_source' );
 		//  var_dump($payment_source); die;
 		add_filter( 'gform_confirmation', array( $this, 'update_confirmation_url' ), 10, 3 );
@@ -102,20 +102,15 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
 			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
 			$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
+
 			//Rc_Cwh_Logger()->log( '==== Create Customer response ====', $response );
 			if ( empty( $response->error ) ) {
 
 				// Add note to Gravity Form Entry
 
-				if ( $customer_id ) {
-					// we are updating customer
-					$this->add_note( $entry['id'], 'Updated Paydock Customer Id:'.$customer_id, 'success' );
-				}else {
-					$customer_id = $response->resource->data->_id;
-					$this->add_note( $entry['id'], 'Added Paydock Customer Id:'.$customer_id, 'success' );
-				}
+				$data['customer_id'] = $customer_id = $response->resource->data->_id;
+				$this->add_note( $entry['id'], 'Added Paydock Customer Id:'.$customer_id, 'success' );
 
-				$data['customer_id'] = $customer_id;
 				gform_update_meta( $entry['id'], 'paydock_customer_data', $data );
 				gform_update_meta( $entry['id'], 'paydock_total', $merge_vars['total'] );
 
@@ -141,6 +136,7 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 				$confirmation['redirect'] = $url;
 			}
 		}
+		// var_dump( $confirmation );die;
 		return $confirmation;
 	}
 

@@ -52,6 +52,51 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 			return $this->paydock_total;
 			//var_dump($this->paydock_total);die;
 		}
+
+
+		public function scripts() {
+			$scripts = array(
+				array(
+					'handle'  => 'paydock-admin',
+					'src'      => str_replace( '/inc', '', $this->get_base_url() ) . "/js/paydock-admin.js",
+					'deps'     => array( 'jquery', 'wp-color-picker' ),
+					'enqueue'  => array(
+						array( "query" => 'page=gf_edit_forms' ), )
+				),
+
+			);
+
+			return array_merge( parent::scripts(), $scripts );
+		}
+
+
+		/**
+		 * Return the stylesheets which should be enqueued.
+		 *
+		 * @return array
+		 */
+		public function styles() {
+			$styles = array(
+			array(
+					'handle'  => 'colorpicker',
+					'src'      => home_url( 'wp-admin/css/color-picker.css'),
+					'version' => $this->_version,
+					'enqueue'  => array(
+						array( "query" => 'page=gf_edit_forms' ), )
+				),
+
+				array(
+					'handle'  => 'paydock-admin',
+					'src'      => str_replace( '/inc', '', $this->get_base_url() ) . "/css/paydock-admin.css",
+					'version' => $this->_version,
+					'enqueue'  => array(
+						array( "query" => 'page=gf_edit_forms' ), )
+				),
+			);
+			return array_merge( parent::styles(), $styles );
+		}
+
+
 		public function parse_charge_form( $form ) {
 
 			if ( !empty( $_GET['id'] ) && !empty( $_GET['customerid'] ) ) {
@@ -254,7 +299,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					"customer_id"=>$customer_id
 				);
 
-				$data = add_filters('pd_one_time_charge_data', $data );
+				$data = add_filters( 'pd_one_time_charge_data', $data );
 				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
 				// echo '<pre>';
 				// print_r( $response ); die;
@@ -307,7 +352,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					$data['schedule'][$feed['meta']['transaction_end']] =$feed['meta']['transaction_end_value'];
 				}
 
-				$data = apply_filters('pd_subscription_charge_data', $data );
+				$data = apply_filters( 'pd_subscription_charge_data', $data );
 
 				$response = Gravity_Paydock()->make_request( 'POST', '/subscriptions', $data );
 				// echo '<pre>';

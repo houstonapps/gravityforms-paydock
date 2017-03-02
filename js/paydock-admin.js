@@ -19,7 +19,7 @@ function showEndTransactionValueField(ele) {
     var loaded = jQuery('#gaddon-setting-row-transaction_end_value').hasClass('loaded')
     if (val != '') {
         jQuery('#gaddon-setting-row-transaction_end_value th').text(label)
-        jQuery('#gaddon-setting-row-transaction_end_value').slideDown('s∏low').addClass('loaded');
+        jQuery('#gaddon-setting-row-transaction_end_value').slideDown('slow').addClass('loaded');
     } else {
         jQuery('#gaddon-setting-row-transaction_end_value').slideUp('slow').addClass('loaded');
     }

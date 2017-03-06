@@ -40,7 +40,6 @@ class GF_Paydock_AddOn_Bootstrap {
 
 		// == Frontend ==
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
-		require_once GF_PAYDOCK_DIR.'/inc/webhook-listener.php';
 		require_once GF_PAYDOCK_DIR.'/inc/ajax-handler.php';
 	}
 }

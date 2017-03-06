@@ -130,13 +130,12 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			if ( !empty( $confirmation['redirect'] ) ) {
 				$url = $confirmation['redirect'];
 				//base64_encode()
-				$url.= '?id='.urlencode( base64_encode( $entry['id'] ) );
+				$url.= (strpos($url, '?') !== false ?"&":"?") . 'id='.urlencode( base64_encode( $entry['id'] ) );
 				$url.= '&customerid='.urlencode( base64_encode( $customer_data['customer_id'] ) );
 				//$url.= '&customer='.urlencode( $customer_data['customer_id']);
 				$confirmation['redirect'] = $url;
 			}
 		}
-		// var_dump( $confirmation );die;
 		return $confirmation;
 	}
 

@@ -34,7 +34,7 @@ function paydocklistener(event) {
 		var PaydockEvent = JSON.parse(event.data);
 		if (PaydockEvent.event == 'finish' && PaydockEvent.purpose == 'payment_source') {
 			if (PaydockEvent.ref_id != '') {
-				jQuery('#paydock_ref_id').val(PaydockEvent.ref_id);
+				jQuery('#paydock_ref_id').val(PaydockEvent.payment_source);
 				jQuery('#paydock_ref_id').closest('form').submit();
 			}
 		}

@@ -25,8 +25,6 @@ class GF_Paydock_Field_Settings {
 			</label>
 			<textarea  id="config_token" class="fieldwidth-3 fieldheight-1  mt-position-right mt-prepopulate" onkeyup="SetFieldProperty('config_token', this.value);"></textarea>
 			<p>Paste in configuration token here.</p>
-                        <!-- Hide WYSIWYG editor for the valid workflow -->
-                        <style>#config_token{display:block!important;visibility:visible!important}div#cke_config_token{display:none!important}</style>
 		</li>
 
 		<li class="paypal_gateway field_setting">

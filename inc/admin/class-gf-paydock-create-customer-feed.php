@@ -86,7 +86,6 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
 			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
 			$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
-
 			//Rc_Cwh_Logger()->log( '==== Create Customer response ====', $response );
 			if ( empty( $response->error ) ) {
 

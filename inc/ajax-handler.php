@@ -23,11 +23,11 @@ function gf_paydock_save_paypal_checkout_token() {
 				 * TODO: Think of storing in transient or any other way to automatically delete
 				 * @var [type]
 				 */
-			$payment_source = get_option( 'paydock_payment_source' );
-			$payment_source[$reference_id] = $response->resource->data;
-			update_option( 'paydock_payment_source', $payment_source );
-			echo $reference_id;
-
+			//$payment_source = get_option( 'paydock_payment_source' );
+			//$payment_source[$reference_id] = $response->resource->data;
+			//update_option( 'paydock_payment_source', $payment_source );
+			//echo $reference_id;
+			echo $response->resource->data;
 			die;
 		}
 		//print_r($response);

@@ -4,14 +4,3 @@
 #gaddon-setting-row-transaction_end_value{
 	display: none;
 }
-
-/* Hide WYSIWYG editor for the valid workflow */
-
-#config_token{
-    display:block !important;
-    visibility:visible !important
-}
-
-div#cke_config_token{
-    display:none !important
-}

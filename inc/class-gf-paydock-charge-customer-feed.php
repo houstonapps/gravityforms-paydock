@@ -370,6 +370,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 						'amount' =>$response->resource->data->amount
 
 					);
+                                        do_action("pd_after_charge_customer", $customer_id, $result);
 				} else {
 					if ( is_object( $response->error ) ) {
 						$error = $response->error->message;

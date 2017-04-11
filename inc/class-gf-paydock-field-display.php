@@ -156,7 +156,7 @@ if ( class_exists( 'GFForms' ) ) {
 		}
 
 		public function get_form_inline_script_on_page_render( $form ) {
-			return "jQuery('.gravity-forms-paydock-tabs-head a')[0].click();
+			return "jQuery('.gravity-forms-paydock-tabs-head a:eq[0]').click();
 
 					    jQuery('.gf-paydock-paypalcheckout-link').click(function(e) {
 			            e.preventDefault();

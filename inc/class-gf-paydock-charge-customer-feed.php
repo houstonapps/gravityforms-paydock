@@ -299,7 +299,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 					"customer_id"=>$customer_id
 				);
 
-				$data = add_filters( 'pd_one_time_charge_data', $data );
+				$data = apply_filters( 'pd_one_time_charge_data', $data );
 				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
 				// echo '<pre>';
 				// print_r( $response ); die;
@@ -370,6 +370,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 						'amount' =>$response->resource->data->amount
 
 					);
+                                        do_action("pd_after_charge_customer", $customer_id, $result);
 				} else {
 					if ( is_object( $response->error ) ) {
 						$error = $response->error->message;

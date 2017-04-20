@@ -33,9 +33,6 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	public function init() {
 
 		parent::init();
-		//   $payment_source = gform_get_meta( 27, 'paydock_customer_data' );
-		// // // $payment_source = get_option( 'paydock_payment_source' );
-		//  var_dump($payment_source); die;
 		add_filter( 'gform_confirmation', array( $this, 'update_confirmation_url' ), 10, 3 );
 		add_filter( 'gform_settings_menu', array( $this, 'override_setting_tab_menu' ), 99 );
 
@@ -55,23 +52,10 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 	 * @return bool|void
 	 */
 	public function process_feed( $feed, $entry, $form ) {
-		$payment_source_token = '';
-		// check if ref id is in $_POST
+
 		if ( !empty( $_POST['paydock_ref_id'] ) ) {
-			// get existing ref ids saved in db
-			$payment_source = get_option( 'paydock_payment_source' );
-			if ( is_array( $payment_source ) ) {
-				//check if payment source token exists for ref id
-				if ( array_key_exists( $_POST['paydock_ref_id'], $payment_source ) ) {
-					$payment_source_token = $payment_source[$_POST['paydock_ref_id']];
-					//remove the ref id
-					unset( $payment_source[$_POST['paydock_ref_id']] );
-					update_option( 'paydock_payment_source', $payment_source );
-				}
-			}
-		}
-		//Rc_Cwh_Logger()->log( 'payment Source token saved is: ', $payment_source_token );
-		if ( !empty( $payment_source_token ) ) {
+
+			$payment_source_token = $_POST['paydock_ref_id'];
 			// Retrieve the name => value pairs for all fields mapped in the 'mappedFields' field map.
 			$field_map = $this->get_field_map_fields( $feed, 'mappedFields' );
 
@@ -102,7 +86,6 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			// Rc_Cwh_Logger()->log( '==== Data to create new customer is ====', $data );
 			// Rc_Cwh_Logger()->log( '==== Customer Endpoint is ====', $endpoint );
 			$response = Gravity_Paydock()->make_request( 'POST', $endpoint, $data );
-
 			//Rc_Cwh_Logger()->log( '==== Create Customer response ====', $response );
 			if ( empty( $response->error ) ) {
 
@@ -130,13 +113,12 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			if ( !empty( $confirmation['redirect'] ) ) {
 				$url = $confirmation['redirect'];
 				//base64_encode()
-				$url.= '?id='.urlencode( base64_encode( $entry['id'] ) );
+				$url.= ( strpos( $url, '?' ) !== false ?"&":"?" ) . 'id='.urlencode( base64_encode( $entry['id'] ) );
 				$url.= '&customerid='.urlencode( base64_encode( $customer_data['customer_id'] ) );
 				//$url.= '&customer='.urlencode( $customer_data['customer_id']);
 				$confirmation['redirect'] = $url;
 			}
 		}
-		// var_dump( $confirmation );die;
 		return $confirmation;
 	}
 

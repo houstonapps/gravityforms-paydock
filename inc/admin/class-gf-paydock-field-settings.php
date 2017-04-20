@@ -23,7 +23,7 @@ class GF_Paydock_Field_Settings {
 				<?php esc_html_e( 'Configuration Token', 'gfpaydock' ); ?>
 				<?php gform_tooltip( 'form_paydock_credit_card_config_token' ) ?>
 			</label>
-			<textarea  id="config_token" class="fieldwidth-3 fieldheight-1  mt-position-right mt-prepopulate" onkeyup="SetFieldProperty('config_token', this.value);"></textarea>
+			<textarea  id="config_token" class="fieldwidth-3 fieldheight-1  mt-position-right mt-prepopulate wysiwyg_exclude" onkeyup="SetFieldProperty('config_token', this.value);"></textarea>
 			<p>Paste in configuration token here.</p>
 		</li>
 

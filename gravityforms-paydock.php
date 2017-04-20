@@ -40,7 +40,6 @@ class GF_Paydock_AddOn_Bootstrap {
 
 		// == Frontend ==
 		require_once GF_PAYDOCK_DIR.'/inc/class-gf-paydock-field-display.php';
-		require_once GF_PAYDOCK_DIR.'/inc/webhook-listener.php';
 		require_once GF_PAYDOCK_DIR.'/inc/ajax-handler.php';
 	}
 }
@@ -113,6 +112,7 @@ class Gravity_Paydock {
 
 		// setup the request
 		$url     = $api_url . $uri;
+                
 
 		$headers =  array( 'content-type'=>'application/json', 'x-user-secret-key'=>$settings['paydock_secret_key'] );
 

@@ -147,6 +147,13 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 							'tooltip'  => '<h6>' . esc_html__( 'Name', 'gfpaydock' ) . '</h6>' . esc_html__( 'Enter a feed name to uniquely identify this setup.', 'gfpaydock' )
 						),
 						array(
+							'name'     => 'paymentDescription',
+							'label'    => esc_html__( 'Payment Description', 'gfpaydock' ),
+							'type'     => 'textarea',
+							'class'    => 'medium',
+							'tooltip'  => '<h6>' . esc_html__( 'Payment Description', 'gfpaydock' ) . '</h6>' . esc_html__( 'Enter description you want to be show in paydock transaction.', 'gfpaydock' )
+						),
+						array(
 							'name'     => 'transactionType',
 							'label'    => esc_html__( 'Transaction Type', 'gfpaydock' ),
 							'type'     => 'select',
@@ -295,7 +302,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$data = array(
 					"amount"=>$submission_data['payment_amount'],
 					"currency"=>$entry['currency'],
-					"description"=> "Charge using Form ".$form['id'],
+					"description"=> $feed['meta']['paymentDescription'],
 					"customer_id"=>$customer_id
 				);
 
@@ -341,7 +348,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$data = array(
 					'amount'=>$submission_data['payment_amount'],
 					'currency'=>$entry['currency'],
-					'description'=> 'Charge using Form '.$form['id'],
+					'description'=> $feed['meta']['paymentDescription'],
 					'customer_id'=>$customer_id,
 					'schedule'=>array(
 						'frequency'=>$feed['meta']['billingCycle_length'],

@@ -143,14 +143,14 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 						'name'    => 'paydock_secret_key',
 						'tooltip' => esc_html__( 'Your PayDock API Secret Key', 'gfpaydock' ),
 						'label'   => esc_html__( 'API Secret Key', 'gfpaydock' ),
-						'type'    => 'text',
+						'type'    => 'paydock_secret_key_type',
 						'class'   => 'medium',
 					),
 					array(
 						'name'    => 'paydock_public_key',
 						'tooltip' => esc_html__( 'Your PayDock API Public Key', 'gfpaydock' ),
 						'label'   => esc_html__( 'API Public Key', 'gfpaydock' ),
-						'type'    => 'text',
+						'type'    => 'paydock_public_key_type',
 						'class'   => 'medium',
 					),
 					array(
@@ -173,6 +173,20 @@ class GF_Paydock_Create_Customer_Feed extends GFFeedAddOn {
 			),
 		);
 	}
+
+	public function settings_paydock_public_key_type($field){
+		$settings = $this->get_current_settings();
+		$val = isset ($settings['paydock_public_key']) ? $settings['paydock_public_key']: '';
+	 ?>
+		<input type="password" name="_gaddon_setting_paydock_public_key" value="<?php echo $val; ?>" class="medium gaddon-setting gaddon-text" id="paydock_public_key">
+	<?php }
+
+	public function settings_paydock_secret_key_type(){
+		$settings = $this->get_current_settings();
+		$val = isset ($settings['paydock_secret_key']) ? $settings['paydock_secret_key']: '';
+	 ?>
+		<input type="password" name="_gaddon_setting_paydock_secret_key" value="<?php echo $val; ?>" class="medium gaddon-setting gaddon-text" id="paydock_secret_key">
+	<?php }
 
 	/**
 	 * Configures the settings which should be rendered on the feed edit page in the Form Settings > PayDock area.

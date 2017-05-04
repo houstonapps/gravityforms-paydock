@@ -112,7 +112,6 @@ class Gravity_Paydock {
 
 		// setup the request
 		$url     = $api_url . $uri;
-                
 
 		$headers =  array( 'content-type'=>'application/json', 'x-user-secret-key'=>$settings['paydock_secret_key'] );
 

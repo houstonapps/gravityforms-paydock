@@ -129,7 +129,7 @@ if ( class_exists( 'GFForms' ) ) {
 			foreach ( $params as $param ) {
 				if ( !empty( $field->{$param} ) ) {
 					$param_name = str_replace( 'paydock_cc_iframe_', '', $param );
-					$url .= $param_name . '=' . ($param === 'paydock_cc_iframe_finish_text' ? $field->{$param} : urlencode($field->{$param})) . '&';
+					$url.=$param_name. '=' .urlencode( $field->{$param} ) . '&';
 				}
 			}
 

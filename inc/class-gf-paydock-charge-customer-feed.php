@@ -46,6 +46,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 			add_filter( 'gform_field_value_paydock_total', array( $this, 'set_price' ) );
 
 			add_filter( 'gform_field_input', array( $this, 'add_hidden_field_to_charge_form' ), 10, 5 );
+			add_filter( 'description_modify', array( $this, 'pass_fields_in_description' ), 10, 3 );
 		}
 
 		public function set_price() {
@@ -302,9 +303,9 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$data = array(
 					"amount"=>$submission_data['payment_amount'],
 					"currency"=>$entry['currency'],
-					"description"=> $feed['meta']['paymentDescription'],
+					"description"=> apply_filters('description_modify', $feed['meta']['paymentDescription'], $form, $entry),
 					"customer_id"=>$customer_id
-				);
+				); 
 
 				$data = apply_filters( 'pd_one_time_charge_data', $data );
 				$response = Gravity_Paydock()->make_request( 'POST', '/charges', $data );
@@ -336,8 +337,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 			}
 			return $result;
 		}
-
-		//
+                
 
 		public function subscribe( $feed, $submission_data, $form, $entry ) {
 			$error = '';
@@ -348,7 +348,7 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 				$data = array(
 					'amount'=>$submission_data['payment_amount'],
 					'currency'=>$entry['currency'],
-					'description'=> $feed['meta']['paymentDescription'],
+					'description'=> apply_filters('description_modify', $feed['meta']['paymentDescription'], $form, $entry),
 					'customer_id'=>$customer_id,
 					'schedule'=>array(
 						'frequency'=>$feed['meta']['billingCycle_length'],
@@ -399,5 +399,30 @@ if ( method_exists( 'GFForms', 'include_payment_addon_framework' ) ) {
 			}
 			return $result;
 		}
+                
+                public function pass_fields_in_description($description, $form, $entry) {
+                    if (is_array($form['fields'])) {
+                        $slugs = [];
+                        foreach ($form['fields'] as $field) {
+                            if (is_array($field->inputs)) {
+                                foreach ($field->inputs as $input) {
+                                    if (!array_key_exists($input['id'], $entry)) {
+                                        continue;
+                                    }
+                                    $slugs[$input["label"]] = $input['id'];
+                                }
+                                continue;
+                            }
+                            if (!array_key_exists($field->id, $entry)) {
+                                continue;
+                            }
+                            $slugs[$field->label] = $field->id;
+                        }
+                        foreach ($slugs as $name => $id) {
+                            $description = str_replace("[" . $name . "]", empty($entry[$id]) ? __("No Data", 'gfpaydock') : $entry[$id], $description);
+                        }
+                    }
+                    return $description;
+                }
 	}
 }
